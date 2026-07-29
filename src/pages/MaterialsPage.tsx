@@ -102,7 +102,6 @@ export function MaterialsPage() {
                   <Fact label="上线阶段" value={material.launchStage} />
                   <Fact label="题材" value={material.theme} />
                   <Fact label="后端品类" value={material.category} />
-                  <Fact label="榜单或收入表现" value={material.ranking} />
                 </dl>
               </DetailSection>
 

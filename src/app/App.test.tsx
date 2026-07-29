@@ -65,11 +65,11 @@ test("does not present unavailable conversion or revenue metrics", async () => {
   const user = userEvent.setup();
   render(<App />);
 
-  expect(screen.queryByText(/转化率|ROAS/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/转化率|ROAS|收入/)).not.toBeInTheDocument();
 
   await user.click(screen.getByRole("link", { name: "素材" }));
-  expect(screen.queryByText(/转化率|ROAS/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/转化率|ROAS|收入/)).not.toBeInTheDocument();
 
   await user.click(screen.getByRole("link", { name: "对比" }));
-  expect(screen.queryByText(/转化率|ROAS/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/转化率|ROAS|收入/)).not.toBeInTheDocument();
 });

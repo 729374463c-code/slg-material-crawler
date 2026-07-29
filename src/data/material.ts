@@ -15,7 +15,6 @@ export const material = {
   launchStage: product.launch_stage,
   theme: product.theme,
   category: product.backend_category,
-  ranking: product.ranking_or_revenue_performance ?? "未提供",
   format: creative.creative_format,
   audience: creative.target_audience,
   hookTypes: creative.first_three_second_hook.hook_type,
