@@ -1,1 +1,4 @@
 .worktrees/
+dist/
+node_modules/
+.sites/
