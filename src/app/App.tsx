@@ -1,16 +1,19 @@
-import { HashRouter, NavLink } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
+import { AppShell } from "../components/AppShell";
+import { ComparePage } from "../pages/ComparePage";
+import { MaterialsPage } from "../pages/MaterialsPage";
+import { OverviewPage } from "../pages/OverviewPage";
 
 export function App() {
   return (
     <HashRouter>
-      <header aria-label="主导航">
-        <nav>
-          <NavLink to="/">总览</NavLink>
-          <NavLink to="/materials">素材</NavLink>
-          <NavLink to="/compare">对比</NavLink>
-        </nav>
-      </header>
-      <main id="main-content">SLG 海外吸量素材情报库</main>
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route index element={<OverviewPage />} />
+          <Route path="materials" element={<MaterialsPage />} />
+          <Route path="compare" element={<ComparePage />} />
+        </Route>
+      </Routes>
     </HashRouter>
   );
 }

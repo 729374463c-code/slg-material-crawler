@@ -1,0 +1,329 @@
+{
+  "record_id": "SLG-0001",
+  "record_name": "Clash of Clans｜5 Reasons to Return",
+  "source_files": {
+    "video": "C:/Users/chenzhiqi/Downloads/1 (1).mp4",
+    "advertiser_evidence": "C:/Users/chenzhiqi/Downloads/1 (1).jpeg",
+    "popularity_evidence": "C:/Users/chenzhiqi/Downloads/1 (2).jpeg"
+  },
+  "required_fields": {
+    "产品信息": {
+      "产品名": "Clash of Clans",
+      "公司": "Supercell",
+      "地区": "未知；当前附件未提供具体投放国家或地区",
+      "平台": "YouTube",
+      "上线阶段": "成熟期产品／老玩家回流召回；根据产品生命周期和素材内容推断",
+      "题材": "欧美卡通奇幻战争",
+      "后端品类": "SLG／村庄建设／联盟战争",
+      "当前榜单或收入表现": "未提供"
+    },
+    "创意信息": {
+      "前3秒钩子类型": [
+        "数字清单",
+        "老玩家回流召回",
+        "利益承诺",
+        "强品牌识别"
+      ],
+      "第一画面是什么": "Clash of Clans 草地地图作为全屏背景，中央出现高对比黄色英文 Here's。",
+      "是否直接展示结果": {
+        "值": false,
+        "说明": "未直接展示最终收益结果，但立即承诺将给出回到旧账号的5个理由。"
+      },
+      "核心卖点": "老玩家回归后追赶成本更低，可以更快恢复成长并重新参与游戏。",
+      "辅助卖点": [
+        "离线期间自动完成部分升级",
+        "移除部队训练等待",
+        "缩短建筑升级时间",
+        "奖励、宝箱和联赛商店对免费玩家更友好",
+        "清理障碍物不再占用建筑工人"
+      ],
+      "是否有角色": {
+        "值": true,
+        "说明": "游戏兵种和野蛮人图标有露出，但没有角色剧情或单一角色主角。"
+      },
+      "是否有口播": {
+        "值": true,
+        "说明": "英语旁白，配合逐词弹出的英语字幕。"
+      },
+      "是否有实机": {
+        "值": true,
+        "说明": "主体由 Clash of Clans 实机画面和游戏 UI 操作画面构成。"
+      },
+      "是否使用假玩法": {
+        "值": false,
+        "说明": "未发现与游戏实际系统明显不一致的假玩法展示。"
+      },
+      "画面风格": [
+        "高饱和游戏实机",
+        "竖屏短视频",
+        "粗描边动效字幕",
+        "数字章节卡",
+        "局部放大与模糊转场"
+      ],
+      "时长": "35.06秒",
+      "剪辑节奏": "快节奏；约每4–7秒切换一个理由，字幕逐词出现，编号卡承担章节转场。",
+      "落版方式": "官方品牌落版；展示 Clash of Clans 标志、App Store 与 Google Play 下载标识，以及绿色 PLAY NOW 按钮。",
+      "本地化形式": [
+        "英语旁白",
+        "英语逐词字幕",
+        "英语 CTA",
+        "全球双商店下载标识"
+      ]
+    },
+    "制作方式": {
+      "实机录屏": {
+        "值": true,
+        "说明": "包含游戏实机和游戏 UI 录屏。"
+      },
+      "3D动画": {
+        "值": false,
+        "说明": "游戏本身包含3D美术，但未发现为广告单独制作的3D动画段落。"
+      },
+      "真人剧情": {
+        "值": false,
+        "说明": "无真人演员和真人剧情。"
+      },
+      "2D动效": {
+        "值": true,
+        "说明": "包含逐词字幕、编号卡、转场和 CTA 等2D动效。"
+      },
+      "AI生成": {
+        "值": false,
+        "说明": "未发现可确认的AI生成画面或声音证据。"
+      },
+      "混合制作": {
+        "值": true,
+        "说明": "由实机录屏、游戏UI、英语口播、2D字幕动效和官方落版混合构成。"
+      },
+      "可玩广告": {
+        "值": false,
+        "说明": "当前文件为线性MP4视频，不是可交互试玩广告。"
+      }
+    }
+  },
+  "product_info": {
+    "product_name": "Clash of Clans",
+    "company": "Supercell",
+    "region": null,
+    "platform": "YouTube",
+    "landing_platform": "Google Play",
+    "launch_stage": "成熟期产品／回流召回",
+    "theme": "欧美卡通奇幻战争",
+    "backend_category": "SLG／村庄建设／联盟战争",
+    "ranking_or_revenue_performance": null
+  },
+  "creative_info": {
+    "creative_format": "五点理由清单／老玩家召回",
+    "target_audience": "曾经玩过但已流失或长期未登录的 Clash of Clans 老玩家",
+    "first_three_second_hook": {
+      "hook_type": [
+        "数字清单",
+        "回流召回",
+        "利益承诺",
+        "强品牌识别"
+      ],
+      "visible_copy": "Here's 5 Reasons Why You Should Log Back Into Your Old Clash of Clans Account",
+      "mechanism": "用“5个回坑理由”制造未完成信息，并直接点名旧账号与老玩家身份。",
+      "result_shown_immediately": false,
+      "result_note": "开头不展示最终收益结果，但立即给出明确的内容数量和回流利益承诺。"
+    },
+    "first_frame": {
+      "description": "Clash of Clans 草地地图作为全屏背景，中央出现高对比黄色英文 Here's。",
+      "visual_focus": "中央大字标题",
+      "brand_recognition": "使用游戏原生地图纹理，约 1.5 秒内出现游戏画面与 Clash of Clans 图标。"
+    },
+    "core_selling_point": "老玩家回归后追赶成本更低，能够更快恢复成长并重新参与游戏。",
+    "supporting_selling_points": [
+      {
+        "sequence": 1,
+        "message": "长期离线期间基地会自动完成部分升级，回归后更接近下一大本营阶段。",
+        "benefit_type": "离线追赶／降低回流负担"
+      },
+      {
+        "sequence": 2,
+        "message": "部队训练时间被移除，可以持续进行战斗。",
+        "benefit_type": "即时战斗／减少等待"
+      },
+      {
+        "sequence": 3,
+        "message": "升级耗时明显缩短，回归玩家可以更快完成成长。",
+        "benefit_type": "成长加速／降低追赶成本"
+      },
+      {
+        "sequence": 4,
+        "message": "游戏对免费玩家更友好，通过奖励进度、宝箱和联赛商店展示可获取资源。",
+        "benefit_type": "免费友好／奖励供给"
+      },
+      {
+        "sequence": 5,
+        "message": "移除障碍物不再占用建筑工人。",
+        "benefit_type": "便利性优化／释放建造资源"
+      }
+    ],
+    "has_character": true,
+    "character_note": "游戏兵种和野蛮人图标有露出，但没有角色剧情或单一角色主角。",
+    "has_voiceover": true,
+    "voiceover_note": "英语旁白，配合逐词弹出的英语字幕。",
+    "has_live_action": false,
+    "has_real_gameplay": true,
+    "real_gameplay_note": "主体由官方游戏实机画面和游戏 UI 操作画面构成。",
+    "uses_fake_gameplay": false,
+    "fake_gameplay_note": "未发现与游戏实际系统明显不一致的假玩法展示。",
+    "visual_style": [
+      "高饱和游戏实机",
+      "竖屏短视频",
+      "粗描边动效字幕",
+      "数字章节卡",
+      "局部放大与模糊转场"
+    ],
+    "duration_seconds": 35.06,
+    "resolution": "1080×1920",
+    "aspect_ratio": "9:16",
+    "frame_rate": 30,
+    "editing_pace": "快节奏；约每 4–7 秒切换一个理由，字幕逐词出现，编号卡承担章节转场。",
+    "end_card": {
+      "start_time_seconds_approx": 33.5,
+      "elements": [
+        "Clash of Clans 标志",
+        "App Store 下载标识",
+        "Google Play 下载标识",
+        "绿色 PLAY NOW 按钮",
+        "游戏画面缩略图"
+      ],
+      "cta": "PLAY NOW",
+      "style": "官方品牌落版／双商店下载"
+    },
+    "localization": {
+      "language": "英语",
+      "form": [
+        "英语旁白",
+        "英语逐词字幕",
+        "英语 CTA",
+        "全球双商店下载标识"
+      ],
+      "localized_region": null
+    }
+  },
+  "production_method": {
+    "primary_method": "混合制作",
+    "components": [
+      "实机录屏",
+      "游戏 UI 录屏",
+      "2D 字幕动效",
+      "数字章节动效",
+      "官方品牌落版"
+    ],
+    "uses_3d_animation_created_for_ad": false,
+    "uses_live_action": false,
+    "uses_ai_generation": false,
+    "is_playable_ad": false
+  },
+  "timeline": [
+    {
+      "time_range": "00:00–00:03",
+      "content": "提出“回到旧账号的5个理由”，出现游戏品牌与老玩家召回承诺。",
+      "function": "前3秒钩子"
+    },
+    {
+      "time_range": "00:03–00:11",
+      "content": "理由1：展示 Welcome Back 和离线升级结果，强调基地自动追赶。",
+      "function": "降低回流成长压力"
+    },
+    {
+      "time_range": "00:11–00:16",
+      "content": "理由2：展示军队配方与持续战斗画面，强调训练时间被移除。",
+      "function": "强调即时战斗"
+    },
+    {
+      "time_range": "00:16–00:24",
+      "content": "理由3：展示升级界面和大本营，强调升级耗时缩短。",
+      "function": "强调追赶速度"
+    },
+    {
+      "time_range": "00:24–00:30",
+      "content": "理由4：展示奖励进度、稀有宝箱和联赛商店，强调免费玩家友好。",
+      "function": "缓解付费顾虑"
+    },
+    {
+      "time_range": "00:30–00:33.5",
+      "content": "理由5：同时清理多个障碍物，强调无需占用建筑工人。",
+      "function": "展示便利性优化"
+    },
+    {
+      "time_range": "00:33.5–00:35.06",
+      "content": "官方品牌与双商店下载落版，绿色 PLAY NOW 按钮。",
+      "function": "行动转化"
+    }
+  ],
+  "performance_data": {
+    "data_source": "广大大",
+    "advertiser": "Supercell",
+    "display_estimate": "3.2亿",
+    "channel": "YouTube",
+    "landing_page": "https://play.google.com/…",
+    "run_days": 33,
+    "run_date_range": {
+      "start": "2026-06-07",
+      "end": "2026-07-09"
+    },
+    "different_copy_versions": "暂无不同版本文案",
+    "popularity_history": [
+      {
+        "time_range": "2026-06-01–2026-06-07",
+        "weekly_popularity": "1.6万",
+        "label": "当周打上 Top10% 标签"
+      }
+    ],
+    "recent_popularity_trend": {
+      "time_range": "2026-06-30–2026-07-09",
+      "observed_pattern": "蓝色人气值在 6月30日–7月2日附近为 0，7月3日快速升至约 1,200，并在截图可见区间内大致保持。",
+      "benchmark_interpretation": "近期曲线高于策略游戏 YouTube 渠道中位数参考线，但低于 Top10% 参考线；历史周数据另显示 2026-06-01–06-07 曾获得 Top10% 标签。",
+      "value_precision": "图表读数为截图目测近似值。"
+    },
+    "conversion_rate": null,
+    "conversion_rate_note": "当前附件未提供转化率数据。"
+  },
+  "creative_assessment": {
+    "primary_strategy": "以老玩家身份识别切入，用连续五个低门槛回坑理由化解“落后、等待、付费和操作负担”四类回流阻力。",
+    "why_it_may_attract": [
+      "首屏直接点名旧账号用户，目标人群高度明确。",
+      "数字清单形成信息缺口，促使用户继续观看剩余理由。",
+      "每个卖点都有实机或 UI 证据，降低纯口播的抽象感。",
+      "逐词字幕、编号卡和高饱和画面适合静音及快速浏览场景。",
+      "35 秒内连续给出五个利益点，信息密度高。"
+    ],
+    "possible_risks": [
+      "主要面向流失老玩家，对从未玩过游戏的新用户吸引力有限。",
+      "五个理由信息密度较高，后半段卖点可能产生记忆竞争。",
+      "不同平台和地区的表现不能仅依据同一人气值直接外推。",
+      "当前没有转化率数据，不能判断高观看或高人气是否最终带来安装或回流。"
+    ],
+    "reusable_pattern": "品牌原生背景 + 明确人群点名 + 数字清单承诺 + 每点一个实机证据 + 官方下载落版",
+    "recommended_tags": [
+      "老玩家召回",
+      "回流追赶",
+      "五点清单",
+      "数字钩子",
+      "功能盘点",
+      "实机证明",
+      "降等待",
+      "免费友好",
+      "英语本地化",
+      "YouTube",
+      "竖屏"
+    ]
+  },
+  "evidence_quality": {
+    "video_inspected": true,
+    "advertiser_screenshot_inspected": true,
+    "popularity_screenshot_inspected": true,
+    "uncertain_fields": [
+      "地区",
+      "具体投放国家",
+      "上线阶段的官方定义",
+      "榜单或收入表现",
+      "转化率",
+      "人气值精确逐日数值"
+    ]
+  }
+}
