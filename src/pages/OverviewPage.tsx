@@ -1,30 +1,31 @@
-import { Button } from "@carbon/react";
 import { Link } from "react-router-dom";
-import { EmptyMaterialSlot } from "../components/EmptyMaterialSlot";
-import { material, minimumComparisonReason } from "../data/material";
+import { materials } from "../data/material";
 
-const evidenceSteps = ["素材内容", "统一拆解", "吸量表现", "观察结论"];
+const evidenceSteps = ["素材采集", "统一拆解", "吸量表现", "对比观察"];
 
 export function OverviewPage() {
+  const confirmedCount = materials.filter((item) => item.status !== "pending_video").length;
+
   return (
     <div className="page overview-page">
       <section className="page-heading">
         <div>
-          <p className="eyebrow">WEEKLY EVIDENCE NOTE / 2026.07</p>
-          <h1>本周素材观察</h1>
+          <p className="eyebrow">WEEKLY TOP ADS / SLG</p>
+          <h1>本周 Top 吸量素材</h1>
         </div>
         <Link className="text-link" to="/materials">
-          查看全部素材 →
+          查看全部素材
         </Link>
       </section>
 
       <section className="observation-panel" aria-labelledby="observation-title">
-        <p className="section-label">PRIMARY OBSERVATION / 01</p>
+        <p className="section-label">DEMO OBJECTIVE / 01</p>
         <h2 id="observation-title">
-          明确点名旧账号玩家，并用五点清单与连续实机证据降低回流顾虑。
+          把海外 SLG 吸量判断从经验感受，推进到可复盘、可对比、可验证的素材证据库。
         </h2>
         <p>
-          当前判断基于 1 条真实素材。结论用于展示证据路径，不代表跨产品规律。
+          当前版本先接入 5 个素材位，其中 {confirmedCount} 条已有视频证据，其余素材先保留广大大 Top
+          榜单记录，后续补充视频后再复核拆解。
         </p>
       </section>
 
@@ -33,21 +34,26 @@ export function OverviewPage() {
           <div className="section-heading">
             <div>
               <p className="section-label">EVIDENCE SET</p>
-              <h2 id="sample-title">本周样本</h2>
+              <h2 id="sample-title">样本列表</h2>
             </div>
-            <span className="section-count">01 / 05</span>
+            <span className="section-count">05 / 05</span>
           </div>
+          <p className="ranking-note">排序依据：广大大展示估值</p>
           <div className="material-list">
-            <Link className="material-row real-material" to="/materials">
-              <span className="material-index">01</span>
-              <div>
-                <strong>{material.name}</strong>
-                <p>{material.format}</p>
-              </div>
-              <span className="metric-value">{material.displayEstimate}</span>
-            </Link>
-            {Array.from({ length: 4 }, (_, index) => (
-              <EmptyMaterialSlot key={index} />
+            {materials.map((item, index) => (
+              <Link
+                className="material-row real-material"
+                data-testid="material-row"
+                key={item.id}
+                to="/materials"
+              >
+                <span className="material-index">{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <strong>{item.name}</strong>
+                  <p>{item.hookTypes.slice(0, 2).join(" / ")}</p>
+                </div>
+                <span className="metric-value">{item.displayEstimate}</span>
+              </Link>
             ))}
           </div>
         </section>
@@ -64,26 +70,21 @@ export function OverviewPage() {
               <li key={step}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <strong>{step}</strong>
-                {index < evidenceSteps.length - 1 && (
-                  <span className="chain-arrow" aria-hidden="true">
-                    →
-                  </span>
-                )}
               </li>
             ))}
           </ol>
           <dl className="compact-facts">
             <div>
               <dt>数据来源</dt>
-              <dd>{material.dataSource}</dd>
+              <dd>广大大 Top 表现素材</dd>
             </div>
             <div>
-              <dt>投放渠道</dt>
-              <dd>{material.platform}</dd>
+              <dt>服务范围</dt>
+              <dd>仅 SLG</dd>
             </div>
             <div>
-              <dt>统计区间</dt>
-              <dd>{material.dateRange}</dd>
+              <dt>当前指标</dt>
+              <dd>吸量侧展示估值、人气、热度</dd>
             </div>
           </dl>
         </section>
@@ -92,10 +93,12 @@ export function OverviewPage() {
       <section className="action-strip">
         <div>
           <p className="section-label">NEXT STEP</p>
-          <strong>补充同类素材后，横向验证钩子与吸量表现。</strong>
-          <p>{minimumComparisonReason}</p>
+          <strong>进入横向对比，快速找出可复用的钩子、题材和制作方式。</strong>
+          <p>本 demo 只展示吸量侧，不展示商业价值或转化指标。</p>
         </div>
-        <Button disabled>进入素材对比</Button>
+        <Link className="cds--btn cds--btn--primary" to="/compare">
+          进入素材对比
+        </Link>
       </section>
     </div>
   );

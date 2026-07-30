@@ -6,13 +6,11 @@ beforeEach(() => {
   window.location.hash = "";
 });
 
-test("navigates between the three complete preview pages", async () => {
+test("navigates between the three preview pages", async () => {
   const user = userEvent.setup();
   render(<App />);
 
-  expect(
-    screen.getByRole("heading", { name: "本周素材观察" }),
-  ).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "本周 Top 吸量素材" })).toBeInTheDocument();
 
   await user.click(screen.getByRole("link", { name: "素材" }));
   expect(screen.getByRole("heading", { name: "素材库" })).toBeInTheDocument();
@@ -21,20 +19,18 @@ test("navigates between the three complete preview pages", async () => {
   expect(screen.getByRole("heading", { name: "素材对比" })).toBeInTheDocument();
 });
 
-test("overview shows one real sample and four reserved material slots", () => {
+test("overview shows five material records and the Guangdada ranking basis", () => {
   render(<App />);
 
   expect(screen.getByText("Clash of Clans")).toBeInTheDocument();
-  expect(screen.getAllByText("待补充素材")).toHaveLength(4);
-  expect(
-    screen.getByRole("button", { name: "进入素材对比" }),
-  ).toBeDisabled();
-  expect(
-    screen.getByText("至少需要 2 条素材才能开始对比"),
-  ).toBeInTheDocument();
+  expect(screen.getByText("Whiteout Survival")).toBeInTheDocument();
+  expect(screen.getByText("Top War: Battle Game")).toBeInTheDocument();
+  expect(screen.getAllByTestId("material-row")).toHaveLength(5);
+  expect(screen.getByText("排序依据：广大大展示估值")).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "进入素材对比" })).toBeInTheDocument();
 });
 
-test("materials detail uses the supplied video and acquisition estimate", async () => {
+test("materials page switches selected material and keeps video fallback links", async () => {
   const user = userEvent.setup();
   const { container } = render(<App />);
 
@@ -44,24 +40,35 @@ test("materials detail uses the supplied video and acquisition estimate", async 
     "src",
     "/media/clash-of-clans-return.mp4",
   );
-  expect(screen.getAllByText("3.2亿").length).toBeGreaterThan(0);
-  expect(screen.getByRole("button", { name: "进入对比" })).toBeDisabled();
+  expect(screen.getByRole("link", { name: "打开视频链接" })).toHaveAttribute(
+    "href",
+    "/media/clash-of-clans-return.mp4",
+  );
+
+  await user.click(screen.getByRole("button", { name: /Whiteout Survival/ }));
+
+  expect(screen.getByRole("heading", { name: /Whiteout Survival/ })).toBeInTheDocument();
+  expect(screen.getAllByText("自动拆解草稿").length).toBeGreaterThan(0);
+  expect(screen.getByRole("link", { name: "查看广大大详情" })).toHaveAttribute(
+    "href",
+    expect.stringContaining("guangdada.net"),
+  );
 });
 
-test("compare preview stays disabled until another material exists", async () => {
+test("compare page is enabled and compares three selected materials", async () => {
   const user = userEvent.setup();
   render(<App />);
 
   await user.click(screen.getByRole("link", { name: "对比" }));
 
-  expect(screen.getByRole("textbox", { name: "观察记录" })).toBeDisabled();
-  expect(screen.getByRole("button", { name: "保存观察" })).toBeDisabled();
-  expect(
-    screen.getByText("至少需要 2 条素材才能开始对比"),
-  ).toBeInTheDocument();
+  expect(screen.getByRole("textbox", { name: "观察记录" })).toBeEnabled();
+  expect(screen.getByRole("button", { name: "保存观察" })).toBeEnabled();
+  expect(screen.getByText("Clash of Clans")).toBeInTheDocument();
+  expect(screen.getByText("Whiteout Survival")).toBeInTheDocument();
+  expect(screen.getByText("Top War: Battle Game")).toBeInTheDocument();
 });
 
-test("does not present unavailable conversion or revenue metrics", async () => {
+test("does not present conversion or revenue metrics", async () => {
   const user = userEvent.setup();
   render(<App />);
 

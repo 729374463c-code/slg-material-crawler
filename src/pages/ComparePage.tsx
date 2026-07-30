@@ -1,21 +1,19 @@
 import { Button } from "@carbon/react";
-import { material, minimumComparisonReason } from "../data/material";
+import { comparableMaterials } from "../data/material";
+import type { Material } from "../data/material";
 
-const comparisonRows = [
-  ["产品 / 地区 / 平台", `${material.name} / ${material.region} / ${material.platform}`],
-  ["前 3 秒钩子", material.hookTypes.join("、")],
-  ["第一画面", material.firstFrame],
-  ["核心卖点", material.coreSellingPoint],
-  ["是否展示结果", material.result],
-  ["角色", material.character],
-  ["口播", material.voiceover],
-  ["真实玩法", material.gameplay],
-  ["假玩法", material.fakeGameplay],
-  ["制作方式", `${material.productionMethod}：${material.productionComponents.join("、")}`],
-  [
-    "吸量表现",
-    `${material.displayEstimate} / ${material.dataSource} / ${material.dateRange}`,
-  ],
+const comparisonRows: Array<[string, (material: Material) => string]> = [
+  ["产品 / 平台", (material) => `${material.name} / ${material.platform}`],
+  ["前 3 秒钩子", (material) => material.hookTypes.join("、")],
+  ["第一画面", (material) => material.firstFrame],
+  ["核心卖点", (material) => material.coreSellingPoint],
+  ["是否展示结果", (material) => material.result],
+  ["角色", (material) => material.character],
+  ["口播", (material) => material.voiceover],
+  ["真实玩法", (material) => material.gameplay],
+  ["假玩法", (material) => material.fakeGameplay],
+  ["制作方式", (material) => `${material.productionMethod}；${material.productionComponents.join("、")}`],
+  ["吸量表现", (material) => `${material.displayEstimate} / ${material.dataSource} / ${material.dateRange}`],
 ];
 
 export function ComparePage() {
@@ -26,14 +24,14 @@ export function ComparePage() {
           <p className="eyebrow">SIDE-BY-SIDE EVIDENCE</p>
           <h1>素材对比</h1>
         </div>
-        <span className="heading-note">已选 1 / 最少 2</span>
+        <span className="heading-note">已选 3 条 / 预览对比</span>
       </section>
 
       <section className="comparison-notice">
         <span aria-hidden="true">01</span>
         <div>
-          <strong>{minimumComparisonReason}</strong>
-          <p>对比维度已保留，接入更多真实素材后再记录跨素材观察。</p>
+          <strong>先用少量样本跑通“吸量数据 + 创意拆解 + 横向对比”的工作流。</strong>
+          <p>这版只看吸量侧表现，不展示商业价值或用户转化指标。</p>
         </div>
       </section>
 
@@ -42,27 +40,23 @@ export function ComparePage() {
           <thead>
             <tr>
               <th scope="col">对比维度</th>
-              <th scope="col">
-                <span className="column-status">已接入</span>
-                {material.name}
-              </th>
-              <th scope="col">
-                <span className="column-status pending">保留位 02</span>
-                等待更多素材
-              </th>
-              <th scope="col">
-                <span className="column-status pending">保留位 03</span>
-                等待更多素材
-              </th>
+              {comparableMaterials.map((material) => (
+                <th key={material.id} scope="col">
+                  <span className={`column-status status-${material.status}`}>
+                    {material.statusLabel}
+                  </span>
+                  {material.name}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {comparisonRows.map(([label, value]) => (
+            {comparisonRows.map(([label, valueFor]) => (
               <tr key={label}>
                 <th scope="row">{label}</th>
-                <td>{value}</td>
-                <td className="pending-cell">—</td>
-                <td className="pending-cell">—</td>
+                {comparableMaterials.map((material) => (
+                  <td key={material.id}>{valueFor(material)}</td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -73,18 +67,17 @@ export function ComparePage() {
         <div>
           <p className="section-label">OBSERVATION NOTE</p>
           <h2 id="editor-title">记录对比观察</h2>
-          <p>当前输入区已锁定。</p>
+          <p>这里先作为内部复盘输入框，后续可接入保存和周报输出。</p>
         </div>
         <div className="editor-controls">
           <div className="native-textarea">
             <label htmlFor="observation-note">观察记录</label>
             <textarea
               id="observation-note"
-              placeholder="接入至少 2 条素材后可记录观察"
-              disabled
+              placeholder="例如：数字清单更适合老玩家召回；伪玩法更适合冷启动泛用户。"
             />
           </div>
-          <Button disabled>保存观察</Button>
+          <Button>保存观察</Button>
         </div>
       </section>
     </div>

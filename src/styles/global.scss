@@ -260,6 +260,12 @@ samp,
   font-size: 11px;
 }
 
+.ranking-note {
+  margin: -4px 0 12px;
+  color: tokens.$muted;
+  font-size: 12px;
+}
+
 .material-list {
   border-top: 1px solid tokens.$rule;
 }
@@ -280,6 +286,20 @@ a.material-row {
 }
 
 a.material-row:hover {
+  background: tokens.$accent-soft;
+}
+
+.material-button {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid tokens.$rule;
+  background: transparent;
+  color: tokens.$ink;
+  text-align: left;
+  cursor: pointer;
+}
+
+.material-button:hover {
   background: tokens.$accent-soft;
 }
 
@@ -518,6 +538,12 @@ a.material-row:hover {
   padding: 7px 10px;
   color: tokens.$accent;
   font: 11px/1 "IBM Plex Mono", monospace;
+  white-space: nowrap;
+}
+
+.status-pending_video {
+  border-color: tokens.$rule;
+  color: tokens.$muted;
 }
 
 .video-evidence {
@@ -539,6 +565,50 @@ a.material-row:hover {
   padding: 10px 12px;
   color: #dce5e1;
   font: 11px/1.2 "IBM Plex Mono", monospace;
+}
+
+.no-video-panel {
+  display: grid;
+  min-height: 300px;
+  place-content: center;
+  gap: 10px;
+  padding: 48px;
+  color: #dce5e1;
+  text-align: center;
+}
+
+.no-video-panel strong {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.no-video-panel p {
+  max-width: 420px;
+  color: #aebbb5;
+  line-height: 1.6;
+}
+
+.link-strip {
+  display: flex;
+  gap: 12px;
+  margin: -8px 0 24px;
+}
+
+.link-strip a,
+.link-strip span {
+  border: 1px solid tokens.$rule;
+  padding: 8px 10px;
+  color: tokens.$muted;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.link-strip a {
+  color: tokens.$accent;
+}
+
+.link-strip a:hover {
+  background: tokens.$accent-soft;
 }
 
 .detail-section {

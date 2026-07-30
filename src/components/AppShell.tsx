@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { materials } from "../data/material";
 
 const navigation = [
   { to: "/", label: "总览", end: true },
@@ -28,7 +29,7 @@ export function AppShell() {
         </nav>
         <div className="header-status">
           <span>PREVIEW</span>
-          <span>1 / 5 素材</span>
+          <span>{materials.length} / 5 素材</span>
         </div>
       </header>
       <main id="main-content" className="app-main">
