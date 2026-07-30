@@ -47,6 +47,8 @@ export type Material = {
 };
 
 const guangdadaPage = "https://guangdada.net/modules/creative/display-ads";
+const topWarSearchPage =
+  "https://guangdada.net/modules/creative/search-global?headerSearch=Top%20War%3A%20Battle%20Game";
 
 export const materials: Material[] = [
   {
@@ -184,7 +186,7 @@ export const materials: Material[] = [
     localization: "待确认。",
     productionMethod: "待审稿",
     productionComponents: ["类游戏画面", "数值动效", "竖屏素材"],
-    productionNotes: ["视频链接待补充", "详情页待复核"],
+    productionNotes: ["当前广大大页面播放器未稳定暴露可下载视频，先保留页面链接", "详情页待复核"],
     dataSource: "广大大",
     displayEstimate: "4.3K",
     popularity: "1791",
@@ -193,9 +195,9 @@ export const materials: Material[] = [
     dateRange: "2026-07-30 至 2026-07-30",
     videoUrl: null,
     videoLink: null,
-    sourceLink: guangdadaPage,
+    sourceLink: topWarSearchPage,
     status: "pending_video",
-    statusLabel: "待补充视频链接",
+    statusLabel: "保留页面链接",
   },
   {
     id: "SLG-0004",
@@ -225,24 +227,26 @@ export const materials: Material[] = [
     gameplay: "待确认。列表页仅确认视频缩略画面。",
     fakeGameplay: "待确认。",
     visualStyle: ["中世纪", "夜间营地", "暗色火光", "竖屏视频"],
-    duration: "27 秒",
+    duration: "22 秒",
     editingPace: "待确认。需播放完整视频后复核。",
     endCard: "待确认。",
     localization: "待确认。",
     productionMethod: "待审稿",
     productionComponents: ["3D 或类游戏画面", "场景氛围", "竖屏素材"],
-    productionNotes: ["视频链接待补充", "详情页待复核"],
+    productionNotes: ["实机或类游戏画面：待复核", "视频已下载", "详情页待复核"],
     dataSource: "广大大",
     displayEstimate: "4.3K",
     popularity: "1791",
     heat: "51",
     runDays: "1 天",
     dateRange: "2026-07-30 至 2026-07-30",
-    videoUrl: null,
-    videoLink: null,
+    videoUrl: "/media/lords-glory-22s.mp4",
+    videoLink: "https://sp2cdn-idea-global.zingfront.com/sp_opera/07a6689ced20c9de5899080841e733df.mp4",
     sourceLink: guangdadaPage,
-    status: "pending_video",
-    statusLabel: "待补充视频链接",
+    localArchivePath:
+      "C:/Users/chenzhiqi/Documents/网站/.worktrees/slg-creative-demo/public/media/lords-glory-22s.mp4",
+    status: "pending_review",
+    statusLabel: "视频已补待复核",
   },
   {
     id: "SLG-0005",
@@ -260,7 +264,7 @@ export const materials: Material[] = [
     hookTypes: ["生存危机", "恐龙题材", "资源压力"],
     hookCopy: "Savage Survival: Jurassic Isle",
     hookMechanism: "用侏罗纪和荒岛关键词提供强题材识别。",
-    firstFrame: "待确认。当前来自广大大策略列表文字记录。",
+    firstFrame: "竖屏荒岛基地画面，画面中有木屋、资源点和角色行动，中心显示播放控件。",
     result: "待确认。",
     coreSellingPoint: "恐龙荒岛生存题材与 SLG 生存建造框架结合。",
     supportingSellingPoints: [
@@ -272,24 +276,26 @@ export const materials: Material[] = [
     gameplay: "待确认。",
     fakeGameplay: "待确认。",
     visualStyle: ["侏罗纪", "荒岛生存", "策略题材"],
-    duration: "1 分 10 秒",
+    duration: "21 秒",
     editingPace: "待确认。需播放完整视频后复核。",
     endCard: "待确认。",
     localization: "待确认。",
     productionMethod: "待审稿",
     productionComponents: ["类游戏画面", "题材包装", "竖屏素材"],
-    productionNotes: ["视频链接待补充", "详情页待复核"],
+    productionNotes: ["实机或类游戏画面：待复核", "视频已下载", "详情页待复核"],
     dataSource: "广大大",
-    displayEstimate: "4.3K",
-    popularity: "1771",
+    displayEstimate: "5.1K",
+    popularity: "1858",
     heat: "51",
     runDays: "1 天",
     dateRange: "2026-07-30 至 2026-07-30",
-    videoUrl: null,
-    videoLink: null,
+    videoUrl: "/media/savage-survival-21s.mp4",
+    videoLink: "https://sp2cdn-idea-global.zingfront.com/sp_opera/b8d1b9c22e13cebe61bf878e82c476bf.mp4",
     sourceLink: guangdadaPage,
-    status: "pending_video",
-    statusLabel: "待补充视频链接",
+    localArchivePath:
+      "C:/Users/chenzhiqi/Documents/网站/.worktrees/slg-creative-demo/public/media/savage-survival-21s.mp4",
+    status: "pending_review",
+    statusLabel: "视频已补待复核",
   },
 ];
 

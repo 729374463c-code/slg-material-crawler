@@ -13,6 +13,8 @@ export function MaterialsPage() {
     [platform],
   );
   const selected = materials.find((item) => item.id === selectedId) ?? materials[0];
+  const playableCount = materials.filter((item) => item.videoUrl).length;
+  const pendingVideoCount = materials.length - playableCount;
 
   return (
     <div className="page materials-page">
@@ -21,7 +23,9 @@ export function MaterialsPage() {
           <p className="eyebrow">MATERIAL EVIDENCE LIBRARY</p>
           <h1>素材库</h1>
         </div>
-        <p className="heading-note">5 条样本位 / 2 条可播放 / 3 条待补视频</p>
+        <p className="heading-note">
+          {materials.length} 条样本位 / {playableCount} 条可播放 / {pendingVideoCount} 条保留页面链接
+        </p>
       </section>
 
       <section className="filter-bar" aria-label="素材筛选">
@@ -114,7 +118,7 @@ function MaterialDetail({ material }: { material: Material }) {
         ) : (
           <div className="no-video-panel">
             <strong>视频待补充</strong>
-            <p>当前只保留广大大 Top 列表记录，待拿到视频链接后再做完整拆解。</p>
+            <p>当前先保留广大大页面链接，便于从网页打开查看；待拿到视频文件后再补完整拆解。</p>
           </div>
         )}
         <div className="video-caption">
