@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access } from "node:fs/promises";
+import { access, readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
 async function renderRoot() {
@@ -37,4 +37,18 @@ test("does not ship the legacy static entry beside the Sites runtime", async () 
 
 test("does not duplicate public video assets inside the server bundle", async () => {
   await assert.rejects(access(new URL("../dist/server/media", import.meta.url)));
+});
+
+test("emits resolvable Carbon font URLs", async () => {
+  const assetsDirectory = new URL("../dist/client/assets/", import.meta.url);
+  const cssFiles = (await readdir(assetsDirectory)).filter((name) =>
+    name.endsWith(".css"),
+  );
+  const css = (
+    await Promise.all(
+      cssFiles.map((name) => readFile(new URL(name, assetsDirectory), "utf8")),
+    )
+  ).join("\n");
+
+  assert.doesNotMatch(css, /url\([^)]*~@ibm\/plex/i);
 });

@@ -1,4 +1,6 @@
-@use "@carbon/react";
+@use "@carbon/react" with (
+  $css--font-face: false
+);
 @use "tokens";
 
 * {
