@@ -29,7 +29,9 @@ export function AppShell() {
         </nav>
         <div className="header-status">
           <span>PREVIEW</span>
-          <span>{materials.length} / 5 素材</span>
+          <span>
+            {materials.length} / {materials.length} 素材
+          </span>
         </div>
       </header>
       <main id="main-content" className="app-main">
