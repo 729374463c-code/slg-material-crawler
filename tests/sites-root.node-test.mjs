@@ -34,3 +34,7 @@ test("serves the intelligence dashboard at the site root", async () => {
 test("does not ship the legacy static entry beside the Sites runtime", async () => {
   await assert.rejects(access(new URL("../dist/index.html", import.meta.url)));
 });
+
+test("does not duplicate public video assets inside the server bundle", async () => {
+  await assert.rejects(access(new URL("../dist/server/media", import.meta.url)));
+});

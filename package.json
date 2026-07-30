@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vinext dev",
-    "build": "node build/clean-dist.mjs && vinext build",
+    "build": "node build/clean-dist.mjs && vinext build && node build/prune-sites-dist.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:sites": "pnpm build && node --test tests/sites-root.node-test.mjs",
