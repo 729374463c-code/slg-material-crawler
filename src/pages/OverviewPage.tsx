@@ -4,7 +4,8 @@ import { materials } from "../data/material";
 const evidenceSteps = ["素材采集", "统一拆解", "吸量表现", "对比观察"];
 
 export function OverviewPage() {
-  const confirmedCount = materials.filter((item) => item.status !== "pending_video").length;
+  const playableCount = materials.filter((item) => item.videoUrl).length;
+  const sampleCount = String(materials.length).padStart(2, "0");
 
   return (
     <div className="page overview-page">
@@ -24,8 +25,8 @@ export function OverviewPage() {
           把海外 SLG 吸量判断从经验感受，推进到可复盘、可对比、可验证的素材证据库。
         </h2>
         <p>
-          当前版本先接入 5 个素材位，其中 {confirmedCount} 条已有视频证据，其余素材先保留广大大 Top
-          榜单记录，后续补充视频后再复核拆解。
+          当前版本先接入 {materials.length} 条 SLG 素材，其中 {playableCount}
+          条已有视频证据和本地归档；无视频、无可用链接的素材不进入本轮 demo。
         </p>
       </section>
 
@@ -36,7 +37,9 @@ export function OverviewPage() {
               <p className="section-label">EVIDENCE SET</p>
               <h2 id="sample-title">样本列表</h2>
             </div>
-            <span className="section-count">05 / 05</span>
+            <span className="section-count">
+              {sampleCount} / {sampleCount}
+            </span>
           </div>
           <p className="ranking-note">排序依据：广大大展示估值</p>
           <div className="material-list">

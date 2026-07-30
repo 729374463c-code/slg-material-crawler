@@ -19,13 +19,14 @@ test("navigates between the three preview pages", async () => {
   expect(screen.getByRole("heading", { name: "素材对比" })).toBeInTheDocument();
 });
 
-test("overview shows five material records and the Guangdada ranking basis", () => {
+test("overview shows four material records and the Guangdada ranking basis", () => {
   render(<App />);
 
   expect(screen.getByText("Clash of Clans")).toBeInTheDocument();
   expect(screen.getByText("Whiteout Survival")).toBeInTheDocument();
-  expect(screen.getByText("Top War: Battle Game")).toBeInTheDocument();
-  expect(screen.getAllByTestId("material-row")).toHaveLength(5);
+  expect(screen.getByText("Lords Glory")).toBeInTheDocument();
+  expect(screen.queryByText("Top War: Battle Game")).not.toBeInTheDocument();
+  expect(screen.getAllByTestId("material-row")).toHaveLength(4);
   expect(screen.getByText("排序依据：广大大展示估值")).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "进入素材对比" })).toBeInTheDocument();
 });
@@ -65,7 +66,8 @@ test("compare page is enabled and compares three selected materials", async () =
   expect(screen.getByRole("button", { name: "保存观察" })).toBeEnabled();
   expect(screen.getByText("Clash of Clans")).toBeInTheDocument();
   expect(screen.getByText("Whiteout Survival")).toBeInTheDocument();
-  expect(screen.getByText("Top War: Battle Game")).toBeInTheDocument();
+  expect(screen.getByText("Lords Glory")).toBeInTheDocument();
+  expect(screen.queryByText("Top War: Battle Game")).not.toBeInTheDocument();
 });
 
 test("does not present conversion or revenue metrics", async () => {

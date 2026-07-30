@@ -15,6 +15,10 @@ export function MaterialsPage() {
   const selected = materials.find((item) => item.id === selectedId) ?? materials[0];
   const playableCount = materials.filter((item) => item.videoUrl).length;
   const pendingVideoCount = materials.length - playableCount;
+  const evidenceNote =
+    pendingVideoCount > 0
+      ? `${materials.length} 条样本位 / ${playableCount} 条可播放 / ${pendingVideoCount} 条保留页面链接`
+      : `${materials.length} 条样本位 / ${playableCount} 条可播放 / 已完成本地归档`;
 
   return (
     <div className="page materials-page">
@@ -23,9 +27,7 @@ export function MaterialsPage() {
           <p className="eyebrow">MATERIAL EVIDENCE LIBRARY</p>
           <h1>素材库</h1>
         </div>
-        <p className="heading-note">
-          {materials.length} 条样本位 / {playableCount} 条可播放 / {pendingVideoCount} 条保留页面链接
-        </p>
+        <p className="heading-note">{evidenceNote}</p>
       </section>
 
       <section className="filter-bar" aria-label="素材筛选">
