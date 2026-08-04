@@ -3,8 +3,9 @@ import { materials } from "../data/material";
 
 const navigation = [
   { to: "/", label: "总览", end: true },
-  { to: "/materials", label: "素材", end: false },
+  { to: "/materials", label: "竞品吸量素材调研", end: false },
   { to: "/compare", label: "对比", end: false },
+  { to: "/methodology", label: "分析方法", end: false },
 ];
 
 export function AppShell() {

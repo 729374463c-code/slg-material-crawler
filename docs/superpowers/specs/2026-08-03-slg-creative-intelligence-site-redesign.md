@@ -1,5 +1,7 @@
 # SLG 海外吸量素材情报库：现有网站改造需求文档
 
+> **2026-08-04 数据源更新：** 广大大 MCP 已完成可行性实测。本文第 2.3、5、8、10、11、14、15 节中涉及“内置浏览器手工检索”“广大大详情页链接”和“未来自动采集”的描述，以 [`2026-08-04-guangdada-mcp-feasibility-and-data-contract.md`](./2026-08-04-guangdada-mcp-feasibility-and-data-contract.md) 与 [`2026-08-04-mcp-first-site-redesign-implementation.md`](../plans/2026-08-04-mcp-first-site-redesign-implementation.md) 为准。页面结构、分析方法、吸量指标范围和“先本地预览、确认后发布”规则保持不变。
+
 ## 0. 文档用途
 
 本文档用于指导另一个 GPT 在现有 GitHub 项目上继续改造网站，而不是重新创建一个无关项目。

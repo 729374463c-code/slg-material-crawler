@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { materials } from "../data/material";
+import { sortMaterials } from "../data/materialExport";
 
 const evidenceSteps = ["素材采集", "统一拆解", "吸量表现", "对比观察"];
 
 export function OverviewPage() {
-  const playableCount = materials.filter((item) => item.videoUrl).length;
+  const linkedCount = materials.filter((item) => item.videoLink || item.originalAdLink).length;
+  const rankedMaterials = sortMaterials(materials, "display");
   const sampleCount = String(materials.length).padStart(2, "0");
 
   return (
@@ -15,7 +17,7 @@ export function OverviewPage() {
           <h1>本周 Top 吸量素材</h1>
         </div>
         <Link className="text-link" to="/materials">
-          查看全部素材
+          查看竞品吸量素材调研
         </Link>
       </section>
 
@@ -25,8 +27,8 @@ export function OverviewPage() {
           把海外 SLG 吸量判断从经验感受，推进到可复盘、可对比、可验证的素材证据库。
         </h2>
         <p>
-          当前版本先接入 {materials.length} 条 SLG 素材，其中 {playableCount}
-          条已有视频证据和本地归档；无视频、无可用链接的素材不进入本轮 demo。
+          当前版本先接入 {materials.length} 条 SLG 素材，其中 {linkedCount}
+          条已有可核验的外部素材链接；网页不保存、不播放广告视频。
         </p>
       </section>
 
@@ -43,12 +45,12 @@ export function OverviewPage() {
           </div>
           <p className="ranking-note">排序依据：广大大展示估值</p>
           <div className="material-list">
-            {materials.map((item, index) => (
+            {rankedMaterials.map((item, index) => (
               <Link
                 className="material-row real-material"
                 data-testid="material-row"
                 key={item.id}
-                to="/materials"
+                to={`/materials/${item.id}`}
               >
                 <span className="material-index">{String(index + 1).padStart(2, "0")}</span>
                 <div>
@@ -79,7 +81,7 @@ export function OverviewPage() {
           <dl className="compact-facts">
             <div>
               <dt>数据来源</dt>
-              <dd>广大大 Top 表现素材</dd>
+              <dd>广大大 MCP Top 表现素材</dd>
             </div>
             <div>
               <dt>服务范围</dt>
@@ -87,7 +89,7 @@ export function OverviewPage() {
             </div>
             <div>
               <dt>当前指标</dt>
-              <dd>吸量侧展示估值、人气、热度</dd>
+              <dd>展示估值、热度、投放天数</dd>
             </div>
           </dl>
         </section>

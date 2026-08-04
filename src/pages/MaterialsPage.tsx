@@ -1,244 +1,275 @@
-import { Select, SelectItem } from "@carbon/react";
+import { Button, Select, SelectItem } from "@carbon/react";
 import { useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { materials } from "../data/material";
-import type { Material } from "../data/material";
+import {
+  buildMaterialsCsv,
+  getMaterialRanks,
+  isPreciseGuangdadaDetail,
+  sortMaterials,
+} from "../data/materialExport";
+import type { MaterialSortKey } from "../data/materialExport";
+
+const ranks = getMaterialRanks(materials);
 
 export function MaterialsPage() {
+  const [search, setSearch] = useState("");
   const [platform, setPlatform] = useState("all");
-  const [selectedId, setSelectedId] = useState(materials[0].id);
+  const [region, setRegion] = useState("all");
+  const [sellingPoint, setSellingPoint] = useState("all");
+  const [sortKey, setSortKey] = useState<MaterialSortKey>("display");
 
-  const filteredMaterials = useMemo(
-    () => materials.filter((item) => platform === "all" || item.platform === platform),
-    [platform],
-  );
-  const selected = materials.find((item) => item.id === selectedId) ?? materials[0];
-  const playableCount = materials.filter((item) => item.videoUrl).length;
-  const pendingVideoCount = materials.length - playableCount;
-  const evidenceNote =
-    pendingVideoCount > 0
-      ? `${materials.length} 条样本位 / ${playableCount} 条可播放 / ${pendingVideoCount} 条保留页面链接`
-      : `${materials.length} 条样本位 / ${playableCount} 条可播放 / 已完成本地归档`;
+  const platformOptions = unique(materials.flatMap((item) => item.platforms));
+  const regionOptions = unique(materials.flatMap((item) => item.regions));
+  const sellingPointOptions = unique(materials.flatMap((item) => item.sellingPointPrimary));
+
+  const filteredMaterials = useMemo(() => {
+    const keyword = search.trim().toLocaleLowerCase();
+    const filtered = materials.filter((item) => {
+      const matchesSearch =
+        !keyword ||
+        item.name.toLocaleLowerCase().includes(keyword) ||
+        item.company.toLocaleLowerCase().includes(keyword);
+      const matchesPlatform = platform === "all" || item.platforms.includes(platform);
+      const matchesRegion = region === "all" || item.regions.includes(region);
+      const matchesSellingPoint =
+        sellingPoint === "all" || item.sellingPointPrimary.includes(sellingPoint);
+      return (
+        matchesSearch &&
+        matchesPlatform &&
+        matchesRegion &&
+        matchesSellingPoint
+      );
+    });
+
+    return sortMaterials(filtered, sortKey);
+  }, [platform, region, search, sellingPoint, sortKey]);
+
+  function clearFilters() {
+    setSearch("");
+    setPlatform("all");
+    setRegion("all");
+    setSellingPoint("all");
+    setSortKey("display");
+  }
+
+  function exportCurrentResults() {
+    const csv = buildMaterialsCsv(filteredMaterials, materials);
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `竞品吸量素材调研_${new Date().toISOString().slice(0, 10)}.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
 
   return (
     <div className="page materials-page">
-      <section className="page-heading">
+      <section className="page-heading data-table-heading">
         <div>
-          <p className="eyebrow">MATERIAL EVIDENCE LIBRARY</p>
-          <h1>素材库</h1>
+          <p className="eyebrow">COMPETITOR CREATIVE RESEARCH / SLG</p>
+          <h1>竞品吸量素材调研</h1>
+          <p className="page-description">
+            独立保存本周 Top 10 竞品素材的投放表现与卖点标签，供筛选、复盘和后续飞书导出使用。
+          </p>
         </div>
-        <p className="heading-note">{evidenceNote}</p>
+        <div className="heading-actions">
+          <span className="heading-note">当前结果 {filteredMaterials.length} 条</span>
+          <Button disabled title="飞书接入将在后续版本实现">
+            飞书导出（预留）
+          </Button>
+          <Button disabled={filteredMaterials.length === 0} onClick={exportCurrentResults}>
+            导出 CSV
+          </Button>
+        </div>
       </section>
 
-      <section className="filter-bar" aria-label="素材筛选">
-        <Select id="product-filter" labelText="产品" defaultValue="all">
-          <SelectItem value="all" text="全部产品" />
-          {materials.map((item) => (
-            <SelectItem key={item.id} value={item.id} text={item.name} />
-          ))}
-        </Select>
-        <Select id="region-filter" labelText="地区" defaultValue="all">
-          <SelectItem value="all" text="不限地区" />
-          <SelectItem value="unknown" text="未提供" />
-        </Select>
+      <section className="dataset-scope" aria-label="数据口径">
+        <div>
+          <span>分类</span>
+          <strong>策略：4X SLG</strong>
+        </div>
+        <div>
+          <span>地区</span>
+          <strong>不限地区</strong>
+        </div>
+        <div>
+          <span>排序基准</span>
+          <strong>展示估值</strong>
+        </div>
+        <div>
+          <span>模块边界</span>
+          <strong>不含创意拆解</strong>
+        </div>
+      </section>
+
+      <section className="table-toolbar" aria-label="素材筛选与排序">
+        <label className="search-field">
+          <span>产品或公司</span>
+          <input
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="搜索产品或公司"
+            type="search"
+            value={search}
+          />
+        </label>
         <Select
           id="platform-filter"
-          labelText="平台"
-          value={platform}
+          labelText="广告平台"
           onChange={(event) => setPlatform(event.target.value)}
+          value={platform}
         >
-          <SelectItem value="all" text="全部平台" />
-          <SelectItem value="YouTube" text="YouTube" />
-          <SelectItem value="Google Play" text="Google Play" />
+          <SelectItem text="全部平台" value="all" />
+          {platformOptions.map((option) => (
+            <SelectItem key={option} text={option} value={option} />
+          ))}
         </Select>
-        <Select id="status-filter" labelText="状态" defaultValue="all">
-          <SelectItem value="all" text="全部状态" />
-          <SelectItem value="confirmed" text="已确认" />
-          <SelectItem value="pending" text="待复核" />
+        <Select
+          id="region-filter"
+          labelText="投放地区"
+          onChange={(event) => setRegion(event.target.value)}
+          value={region}
+        >
+          <SelectItem text="全部地区" value="all" />
+          {regionOptions.map((option) => (
+            <SelectItem key={option} text={option} value={option} />
+          ))}
         </Select>
+        <Select
+          id="selling-point-filter"
+          labelText="卖点一级标签"
+          onChange={(event) => setSellingPoint(event.target.value)}
+          value={sellingPoint}
+        >
+          <SelectItem text="全部卖点" value="all" />
+          {sellingPointOptions.map((option) => (
+            <SelectItem key={option} text={option} value={option} />
+          ))}
+        </Select>
+        <Select
+          id="sort-filter"
+          labelText="排序"
+          onChange={(event) => setSortKey(event.target.value as MaterialSortKey)}
+          value={sortKey}
+        >
+          <SelectItem text="展示估值最高" value="display" />
+          <SelectItem text="热度最高" value="heat" />
+          <SelectItem text="投放最久" value="days" />
+          <SelectItem text="最近投放" value="recent" />
+        </Select>
+        <button className="clear-filters" onClick={clearFilters} type="button">
+          清空筛选
+        </button>
       </section>
 
-      <div className="master-detail">
-        <aside className="material-master" aria-labelledby="material-list-title">
-          <div className="section-heading compact-heading">
-            <div>
-              <p className="section-label">MATERIAL INDEX</p>
-              <h2 id="material-list-title">素材列表</h2>
-            </div>
+      <section className="materials-table-shell" aria-label="竞品吸量素材调研数据">
+        {filteredMaterials.length > 0 ? (
+          <div className="materials-table-scroll">
+            <table className="materials-table">
+              <thead>
+                <tr className="table-groups">
+                  <th colSpan={2} scope="colgroup">产品与素材</th>
+                  <th colSpan={7} scope="colgroup">吸量与投放</th>
+                  <th colSpan={2} scope="colgroup">卖点类型</th>
+                </tr>
+                <tr>
+                  <th scope="col">产品信息</th>
+                  <th scope="col">视频素材</th>
+                  <th scope="col">排名</th>
+                  <th scope="col">广告平台</th>
+                  <th scope="col">热度</th>
+                  <th scope="col">投放天数</th>
+                  <th scope="col">展示估值</th>
+                  <th scope="col">投放时间</th>
+                  <th scope="col">投放地区</th>
+                  <th scope="col">一级标签</th>
+                  <th scope="col">二级标签</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredMaterials.map((material) => (
+                  <tr data-testid="material-data-row" key={material.id}>
+                    <td className="product-cell">
+                      <Link to={`/materials/${material.id}`}>{material.name}</Link>
+                      <span>{material.company}</span>
+                      <small>{material.dataSource}</small>
+                    </td>
+                    <td className="link-cell">
+                      {material.videoLink ? (
+                        <a href={material.videoLink} rel="noreferrer" target="_blank">
+                          打开视频
+                        </a>
+                      ) : material.originalAdLink ? (
+                        <a href={material.originalAdLink} rel="noreferrer" target="_blank">
+                          打开原始广告
+                        </a>
+                      ) : (
+                        <span>链接待补充</span>
+                      )}
+                      {isPreciseGuangdadaDetail(material.guangdadaDetailLink) ? (
+                        <a
+                          className="secondary-table-link"
+                          href={material.guangdadaDetailLink ?? undefined}
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          广大大详情
+                        </a>
+                      ) : null}
+                    </td>
+                    <td className="numeric-cell">{ranks.get(material.id) ?? "未提供"}</td>
+                    <td>{listOrMissing(material.platforms)}</td>
+                    <td className="numeric-cell">{material.heatValue ?? "未提供"}</td>
+                    <td className="numeric-cell">{material.runDaysValue ?? "未提供"}</td>
+                    <td className="estimate-cell">{material.displayEstimate}</td>
+                    <td className="date-cell">
+                      <span>{material.dateStart ?? "未提供"}</span>
+                      <span>{material.dateEnd ?? "未提供"}</span>
+                    </td>
+                    <td>{tagList(material.regions, 3)}</td>
+                    <td>{tagList(material.sellingPointPrimary)}</td>
+                    <td>{tagList(material.sellingPointSecondary)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          {filteredMaterials.length > 0 ? (
-            <div className="material-list">
-              {filteredMaterials.map((item, index) => (
-                <button
-                  className={`material-row material-button ${
-                    item.id === selected.id ? "selected-material" : ""
-                  }`}
-                  key={item.id}
-                  onClick={() => setSelectedId(item.id)}
-                  type="button"
-                >
-                  <span className="material-index">{String(index + 1).padStart(2, "0")}</span>
-                  <div>
-                    <strong>{item.name}</strong>
-                    <p>{item.hookTypes.slice(0, 2).join(" / ")}</p>
-                  </div>
-                  <span className="metric-value">{item.displayEstimate}</span>
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-filter-result">
-              <strong>没有符合当前条件的素材</strong>
-              <p>切换平台筛选可查看已接入样本。</p>
-            </div>
-          )}
-        </aside>
+        ) : (
+          <div className="empty-filter-result">
+            <strong>没有符合当前条件的素材</strong>
+            <p>清空筛选后可重新查看全部记录。</p>
+            <button className="clear-filters" onClick={clearFilters} type="button">
+              清空筛选
+            </button>
+          </div>
+        )}
+      </section>
 
-        <MaterialDetail material={selected} />
-      </div>
+      <p className="table-footnote">
+        本模块只展示并导出竞品调研字段。创意拆解、制作方式、素材对比和分析方法均在其他模块维护。
+      </p>
     </div>
   );
 }
 
-function MaterialDetail({ material }: { material: Material }) {
-  return (
-    <section className="material-detail" aria-labelledby="detail-title">
-      <div className="detail-hero">
-        <div>
-          <p className="section-label">SELECTED / {material.id}</p>
-          <h2 id="detail-title">{material.recordName}</h2>
-          <p>{material.audience}</p>
-        </div>
-        <span className={`selected-pill status-${material.status}`}>{material.statusLabel}</span>
-      </div>
-
-      <div className="video-evidence">
-        {material.videoUrl ? (
-          <video src={material.videoUrl} controls preload="metadata">
-            视频文件不可用，文字拆解仍可查看。
-          </video>
-        ) : (
-          <div className="no-video-panel">
-            <strong>视频待补充</strong>
-            <p>当前先保留广大大页面链接，便于从网页打开查看；待拿到视频文件后再补完整拆解。</p>
-          </div>
-        )}
-        <div className="video-caption">
-          <span>{material.duration}</span>
-          <span>{material.videoUrl ? "可在线播放" : "待补视频"}</span>
-        </div>
-      </div>
-
-      <div className="link-strip">
-        {material.videoLink ? (
-          <a href={material.videoLink} rel="noreferrer" target="_blank">
-            打开视频链接
-          </a>
-        ) : (
-          <span>视频链接待补充</span>
-        )}
-        <a href={material.sourceLink} rel="noreferrer" target="_blank">
-          查看广大大详情
-        </a>
-      </div>
-
-      <DetailSection title="基础信息" index="01">
-        <dl className="fact-grid">
-          <Fact label="产品" value={material.name} />
-          <Fact label="公司" value={material.company} />
-          <Fact label="地区" value={material.region} />
-          <Fact label="平台" value={material.platform} />
-          <Fact label="上线阶段" value={material.launchStage} />
-          <Fact label="题材" value={material.theme} />
-          <Fact label="后端品类" value={material.category} />
-          <Fact label="状态" value={material.statusLabel} />
-        </dl>
-      </DetailSection>
-
-      <DetailSection title="创意拆解" index="02">
-        <dl className="detail-list">
-          <Fact label="前 3 秒钩子" value={material.hookTypes.join("、")} />
-          <Fact label="可见文案" value={material.hookCopy} />
-          <Fact label="钩子机制" value={material.hookMechanism} />
-          <Fact label="第一画面" value={material.firstFrame} />
-          <Fact label="核心卖点" value={material.coreSellingPoint} />
-          <Fact label="是否展示结果" value={material.result} />
-          <Fact label="角色" value={material.character} />
-          <Fact label="口播" value={material.voiceover} />
-          <Fact label="实机" value={material.gameplay} />
-          <Fact label="假玩法" value={material.fakeGameplay} />
-          <Fact label="画面风格" value={material.visualStyle.join("、")} />
-          <Fact label="剪辑节奏" value={material.editingPace} />
-          <Fact label="落版" value={material.endCard} />
-          <Fact label="本地化" value={material.localization} />
-        </dl>
-        <div className="selling-points">
-          <p className="section-label">SUPPORTING SELLING POINTS</p>
-          <ol>
-            {material.supportingSellingPoints.map((point) => (
-              <li key={point.sequence}>
-                <span>{String(point.sequence).padStart(2, "0")}</span>
-                <div>
-                  <strong>{point.benefit_type}</strong>
-                  <p>{point.message}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </DetailSection>
-
-      <DetailSection title="制作方式" index="03">
-        <dl className="detail-list">
-          <Fact label="主要方式" value={material.productionMethod} />
-          <Fact label="制作组成" value={material.productionComponents.join("、")} />
-          <Fact label="备注" value={material.productionNotes.join("；")} />
-        </dl>
-      </DetailSection>
-
-      <DetailSection title="吸量数据" index="04">
-        <div className="performance-grid">
-          <div className="primary-metric">
-            <span>展示估值</span>
-            <strong>{material.displayEstimate}</strong>
-          </div>
-          <dl className="fact-grid">
-            <Fact label="数据来源" value={material.dataSource} />
-            <Fact label="人气值" value={material.popularity} />
-            <Fact label="热度" value={material.heat} />
-            <Fact label="统计区间" value={material.dateRange} />
-          </dl>
-        </div>
-      </DetailSection>
-    </section>
-  );
+function unique(values: string[]) {
+  return [...new Set(values.filter(Boolean))].sort((left, right) => left.localeCompare(right));
 }
 
-function DetailSection({
-  title,
-  index,
-  children,
-}: {
-  title: string;
-  index: string;
-  children: ReactNode;
-}) {
-  return (
-    <section className="detail-section">
-      <div className="detail-section-title">
-        <span>{index}</span>
-        <h3>{title}</h3>
-      </div>
-      <div>{children}</div>
-    </section>
-  );
+function listOrMissing(values: string[]) {
+  return values.length > 0 ? values.join("、") : "未提供";
 }
 
-function Fact({ label, value }: { label: string; value: string }) {
+function tagList(values: string[], limit = values.length) {
+  if (values.length === 0) return <span className="missing-value">未提供</span>;
+  const visible = values.slice(0, limit);
+
   return (
-    <div>
-      <dt>{label}</dt>
-      <dd>{value}</dd>
+    <div className="table-tags">
+      {visible.map((value) => (
+        <span key={value}>{value}</span>
+      ))}
+      {values.length > limit ? <small>+{values.length - limit}</small> : null}
     </div>
   );
 }
