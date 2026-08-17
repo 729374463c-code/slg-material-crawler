@@ -26,28 +26,32 @@
 ### Task 1: Define the dual-link data contract
 
 **Files:**
+- Create: `src/data/materialLinks.ts`
+- Create: `src/data/materialLinks.test.ts`
 - Modify: `src/data/material.ts`
-- Test: `src/app/App.test.tsx`
 
 **Interfaces:**
 - Consumes: existing `Material` records whose `videoLink` and `originalAdLink` may be `null`.
-- Produces: `videoLinkCollectedAt: string | null` on every `Material`; DataEye records use `videoLink` for the temporary signed URL and `originalAdLink` for the permanent AdXray detail page.
+- Produces: `videoLinkCollectedAt: string | null` on every `Material` and `getMaterialExternalLinks(material)` for consumer-facing link labels and fallback metadata.
 
 - [ ] **Step 1: Write the failing contract test**
 
-Add a test that selects `dataeye-cn-slg-10`, opens the first material, and expects a collection-time label plus two external links:
+Create `materialLinks.test.ts`, reuse one complete existing `Material` fixture, override its DataEye link fields, and assert that `getMaterialExternalLinks()` returns two distinct consumer actions plus the collection time:
 
-```tsx
-expect(screen.getByText(/视频直链采集时间/)).toBeInTheDocument();
-expect(screen.getByRole("link", { name: "直接打开视频" })).toHaveAttribute("href", expect.stringContaining("adxvideo.dataeye.com"));
-expect(screen.getByRole("link", { name: "查看 AdXray 详情" })).toHaveAttribute("href", expect.stringContaining("https://adxray.dataeye.com/index/home#/Product/Plan/"));
+```ts
+expect(getMaterialExternalLinks(dataeyeMaterial)).toEqual({
+  directVideo: { label: "直接打开视频", href: "https://adxvideo.dataeye.com/example.mp4?auth_key=fresh" },
+  detailPage: { label: "查看 AdXray 详情", href: "https://adxray.dataeye.com/index/home#/Product/Plan/123" },
+  collectedAt: "2026-08-17 15:00",
+  warning: "视频直链为临时地址；无法打开时请使用 AdXray 详情页。",
+});
 ```
 
 - [ ] **Step 2: Run the focused test and verify failure**
 
-Run: `pnpm test -- src/app/App.test.tsx`
+Run: `pnpm test -- src/data/materialLinks.test.ts`
 
-Expected: FAIL because the batch and `videoLinkCollectedAt` UI do not exist.
+Expected: FAIL because `materialLinks.ts` and `getMaterialExternalLinks()` do not exist.
 
 - [ ] **Step 3: Extend the material contract**
 
@@ -57,18 +61,18 @@ Add this field to `Material`:
 videoLinkCollectedAt: string | null;
 ```
 
-Update existing seed conversion and literal records with `videoLinkCollectedAt: null` so all existing batches remain valid.
+Update existing seed conversion and literal records with `videoLinkCollectedAt: null` so all existing batches remain valid. Implement `getMaterialExternalLinks(material)` to expose distinct DataEye actions only when `videoLink` and `originalAdLink` are both present and different; preserve a single-link result for existing non-DataEye records.
 
 - [ ] **Step 4: Run the TypeScript-bearing test command**
 
-Run: `pnpm test -- src/app/App.test.tsx`
+Run: `pnpm test -- src/data/materialLinks.test.ts`
 
-Expected: the suite still fails only on the not-yet-created DataEye batch, with no TypeScript transform errors.
+Expected: PASS with the exact two-link result and warning.
 
 - [ ] **Step 5: Commit the contract change**
 
 ```bash
-git add src/data/material.ts src/app/App.test.tsx
+git add src/data/material.ts src/data/materialLinks.ts src/data/materialLinks.test.ts
 git commit -m "test: define DataEye dual-link contract"
 ```
 
