@@ -1,6 +1,9 @@
 [build]
-  command = "pnpm build"
-  publish = "dist/client"
+  command = "pnpm build:netlify"
+  publish = "dist/netlify"
+
+[build.environment]
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
 
 [[redirects]]
   from = "/*"
