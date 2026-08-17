@@ -1,18 +1,21 @@
 import { Button, Select, SelectItem } from "@carbon/react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { materials } from "../data/material";
+import { WeekSelector } from "../components/WeekSelector";
 import {
-  buildMaterialsCsv,
+  buildMaterialsWorkbook,
   getMaterialRanks,
   isPreciseGuangdadaDetail,
   sortMaterials,
 } from "../data/materialExport";
 import type { MaterialSortKey } from "../data/materialExport";
-
-const ranks = getMaterialRanks(materials);
+import { getMaterialExternalLinks } from "../data/materialLinks";
+import { useMaterialWeek, withWeek } from "../data/useMaterialWeek";
 
 export function MaterialsPage() {
+  const { selectedWeek } = useMaterialWeek();
+  const materials = selectedWeek.materials;
+  const ranks = getMaterialRanks(materials);
   const [search, setSearch] = useState("");
   const [platform, setPlatform] = useState("all");
   const [region, setRegion] = useState("all");
@@ -22,6 +25,7 @@ export function MaterialsPage() {
   const platformOptions = unique(materials.flatMap((item) => item.platforms));
   const regionOptions = unique(materials.flatMap((item) => item.regions));
   const sellingPointOptions = unique(materials.flatMap((item) => item.sellingPointPrimary));
+  const expiryWarning = materials.map(getMaterialExternalLinks).find((links) => links.warning)?.warning;
 
   const filteredMaterials = useMemo(() => {
     const keyword = search.trim().toLocaleLowerCase();
@@ -43,7 +47,7 @@ export function MaterialsPage() {
     });
 
     return sortMaterials(filtered, sortKey);
-  }, [platform, region, search, sellingPoint, sortKey]);
+  }, [materials, platform, region, search, sellingPoint, sortKey]);
 
   function clearFilters() {
     setSearch("");
@@ -53,12 +57,16 @@ export function MaterialsPage() {
     setSortKey("display");
   }
 
-  function exportCurrentResults() {
-    const csv = buildMaterialsCsv(filteredMaterials, materials);
-    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  async function exportCurrentResults() {
+    const workbook = await buildMaterialsWorkbook(filteredMaterials, materials);
+    const url = URL.createObjectURL(
+      new Blob([workbook], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      }),
+    );
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = `竞品吸量素材调研_${new Date().toISOString().slice(0, 10)}.csv`;
+    anchor.download = `竞品吸量素材调研_${selectedWeek.label}_${selectedWeek.snapshotDate}.xlsx`;
     anchor.click();
     URL.revokeObjectURL(url);
   }
@@ -70,7 +78,7 @@ export function MaterialsPage() {
           <p className="eyebrow">COMPETITOR CREATIVE RESEARCH / SLG</p>
           <h1>竞品吸量素材调研</h1>
           <p className="page-description">
-            独立保存本周 Top 10 竞品素材的投放表现与卖点标签，供筛选、复盘和后续飞书导出使用。
+            按周独立保存竞品素材的投放表现、卖点标签与脚本分析，历史内容不会被新一周覆盖。
           </p>
         </div>
         <div className="heading-actions">
@@ -79,10 +87,14 @@ export function MaterialsPage() {
             飞书导出（预留）
           </Button>
           <Button disabled={filteredMaterials.length === 0} onClick={exportCurrentResults}>
-            导出 CSV
+            导出 Excel
           </Button>
         </div>
       </section>
+
+      <WeekSelector />
+
+      {expiryWarning ? <p className="link-expiry-note">{expiryWarning}</p> : null}
 
       <section className="dataset-scope" aria-label="数据口径">
         <div>
@@ -162,7 +174,14 @@ export function MaterialsPage() {
         </button>
       </section>
 
-      <section className="materials-table-shell" aria-label="竞品吸量素材调研数据">
+      <section
+        aria-describedby="materials-scroll-hint"
+        aria-label="竞品吸量素材调研数据"
+        className="materials-table-shell"
+      >
+        <p className="table-scroll-hint" id="materials-scroll-hint">
+          左右拖动表格查看全部字段，滚动时产品信息和表头会保持可见。
+        </p>
         {filteredMaterials.length > 0 ? (
           <div className="materials-table-scroll">
             <table className="materials-table">
@@ -171,6 +190,7 @@ export function MaterialsPage() {
                   <th colSpan={2} scope="colgroup">产品与素材</th>
                   <th colSpan={7} scope="colgroup">吸量与投放</th>
                   <th colSpan={2} scope="colgroup">卖点类型</th>
+                  <th className="script-group" colSpan={3} scope="colgroup">脚本规律</th>
                 </tr>
                 <tr>
                   <th scope="col">产品信息</th>
@@ -184,28 +204,34 @@ export function MaterialsPage() {
                   <th scope="col">投放地区</th>
                   <th scope="col">一级标签</th>
                   <th scope="col">二级标签</th>
+                  <th className="script-heading" scope="col">脚本总结</th>
+                  <th className="script-heading" scope="col">结构与节奏</th>
+                  <th className="script-heading" scope="col">情绪曲线</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredMaterials.map((material) => (
+                {filteredMaterials.map((material) => {
+                  const links = getMaterialExternalLinks(material);
+                  return (
                   <tr data-testid="material-data-row" key={material.id}>
                     <td className="product-cell">
-                      <Link to={`/materials/${material.id}`}>{material.name}</Link>
+                      <Link to={withWeek(`/materials/${material.id}`, selectedWeek.id)}>{material.name}</Link>
                       <span>{material.company}</span>
                       <small>{material.dataSource}</small>
                     </td>
                     <td className="link-cell">
-                      {material.videoLink ? (
-                        <a href={material.videoLink} rel="noreferrer" target="_blank">
-                          打开视频
-                        </a>
-                      ) : material.originalAdLink ? (
-                        <a href={material.originalAdLink} rel="noreferrer" target="_blank">
-                          打开原始广告
+                      {links.directVideo ? (
+                        <a href={links.directVideo.href} rel="noreferrer" target="_blank">
+                          {links.directVideo.label}
                         </a>
                       ) : (
                         <span>链接待补充</span>
                       )}
+                      {links.detailPage ? (
+                        <a className="secondary-table-link" href={links.detailPage.href} rel="noreferrer" target="_blank">
+                          {links.detailPage.label}
+                        </a>
+                      ) : null}
                       {isPreciseGuangdadaDetail(material.guangdadaDetailLink) ? (
                         <a
                           className="secondary-table-link"
@@ -229,8 +255,20 @@ export function MaterialsPage() {
                     <td>{tagList(material.regions, 3)}</td>
                     <td>{tagList(material.sellingPointPrimary)}</td>
                     <td>{tagList(material.sellingPointSecondary)}</td>
+                    <td className="script-cell">{material.scriptAnalysis.summary}</td>
+                    <td className="script-cell">
+                      <ol>
+                        {material.scriptAnalysis.structureAndRhythm.map((item) => <li key={item}>{item}</li>)}
+                      </ol>
+                    </td>
+                    <td className="script-cell">
+                      <ol>
+                        {material.scriptAnalysis.emotionCurve.map((item) => <li key={item}>{item}</li>)}
+                      </ol>
+                    </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -246,7 +284,7 @@ export function MaterialsPage() {
       </section>
 
       <p className="table-footnote">
-        本模块只展示并导出竞品调研字段。创意拆解、制作方式、素材对比和分析方法均在其他模块维护。
+        本模块展示并导出竞品投放数据、卖点标签与脚本规律。创意拆解、制作方式和素材对比仍在其他页面维护。
       </p>
     </div>
   );

@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
-import { materials } from "../data/material";
+import { WeekSelector } from "../components/WeekSelector";
 import { sortMaterials } from "../data/materialExport";
+import { useMaterialWeek, withWeek } from "../data/useMaterialWeek";
 
 const evidenceSteps = ["素材采集", "统一拆解", "吸量表现", "对比观察"];
 
 export function OverviewPage() {
+  const { selectedWeek } = useMaterialWeek();
+  const materials = selectedWeek.materials;
   const linkedCount = materials.filter((item) => item.videoLink || item.originalAdLink).length;
   const rankedMaterials = sortMaterials(materials, "display");
   const sampleCount = String(materials.length).padStart(2, "0");
@@ -14,12 +17,14 @@ export function OverviewPage() {
       <section className="page-heading">
         <div>
           <p className="eyebrow">WEEKLY TOP ADS / SLG</p>
-          <h1>本周 Top 吸量素材</h1>
+          <h1>{selectedWeek.label} Top 吸量素材</h1>
         </div>
-        <Link className="text-link" to="/materials">
+        <Link className="text-link" to={withWeek("/materials", selectedWeek.id)}>
           查看竞品吸量素材调研
         </Link>
       </section>
+
+      <WeekSelector />
 
       <section className="observation-panel" aria-labelledby="observation-title">
         <p className="section-label">DEMO OBJECTIVE / 01</p>
@@ -50,7 +55,7 @@ export function OverviewPage() {
                 className="material-row real-material"
                 data-testid="material-row"
                 key={item.id}
-                to={`/materials/${item.id}`}
+                to={withWeek(`/materials/${item.id}`, selectedWeek.id)}
               >
                 <span className="material-index">{String(index + 1).padStart(2, "0")}</span>
                 <div>
@@ -101,7 +106,7 @@ export function OverviewPage() {
           <strong>进入横向对比，快速找出可复用的钩子、题材和制作方式。</strong>
           <p>本 demo 只展示吸量侧，不展示商业价值或转化指标。</p>
         </div>
-        <Link className="cds--btn cds--btn--primary" to="/compare">
+        <Link className="cds--btn cds--btn--primary" to={withWeek("/compare", selectedWeek.id)}>
           进入素材对比
         </Link>
       </section>

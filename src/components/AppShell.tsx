@@ -1,14 +1,17 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { materials } from "../data/material";
+import { materialWeeks } from "../data/materialWeeks";
+import { useMaterialWeek, withWeek } from "../data/useMaterialWeek";
 
 const navigation = [
   { to: "/", label: "总览", end: true },
   { to: "/materials", label: "竞品吸量素材调研", end: false },
+  { to: "/weekly-review", label: "周度复盘", end: false },
   { to: "/compare", label: "对比", end: false },
   { to: "/methodology", label: "分析方法", end: false },
 ];
 
 export function AppShell() {
+  const { selectedWeek } = useMaterialWeek();
   return (
     <div className="app-shell">
       <header className="app-header">
@@ -20,7 +23,7 @@ export function AppShell() {
           {navigation.map((item) => (
             <NavLink
               key={item.to}
-              to={item.to}
+              to={withWeek(item.to, selectedWeek.id)}
               end={item.end}
               className={({ isActive }) => (isActive ? "active" : undefined)}
             >
@@ -31,7 +34,7 @@ export function AppShell() {
         <div className="header-status">
           <span>PREVIEW</span>
           <span>
-            {materials.length} / {materials.length} 素材
+            {materialWeeks.length} 批次 / {materialWeeks.reduce((sum, week) => sum + week.materials.length, 0)} 条
           </span>
         </div>
       </header>

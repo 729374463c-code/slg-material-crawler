@@ -1,15 +1,27 @@
+import { ArrowLeft } from "@carbon/icons-react";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { materials } from "../data/material";
 import { isPreciseGuangdadaDetail } from "../data/materialExport";
+import { getMaterialExternalLinks } from "../data/materialLinks";
+import { allMaterials } from "../data/materialWeeks";
+import { withWeek } from "../data/useMaterialWeek";
 
 export function MaterialDetailPage() {
   const { materialId } = useParams();
-  const material = materials.find((item) => item.id === materialId);
+  const material = allMaterials.find((item) => item.id === materialId);
 
   if (!material) return <Navigate replace to="/materials" />;
+  const links = getMaterialExternalLinks(material);
 
   return (
     <div className="page material-detail-page">
+      <Link
+        aria-label="返回竞品吸量素材调研"
+        className="icon-back-button"
+        title="返回竞品吸量素材调研"
+        to={withWeek("/materials", material.weekId ?? "week-1")}
+      >
+        <ArrowLeft size={20} />
+      </Link>
       <section className="page-heading detail-page-heading">
         <div>
           <p className="eyebrow">MATERIAL RECORD / {material.id}</p>
@@ -17,7 +29,6 @@ export function MaterialDetailPage() {
         </div>
         <div className="heading-actions">
           <span className={`review-status status-${material.status}`}>{material.statusLabel}</span>
-          <Link className="text-link" to="/materials">返回竞品吸量素材调研</Link>
         </div>
       </section>
 
@@ -42,15 +53,15 @@ export function MaterialDetailPage() {
           <p>网站不保存或播放视频，所有链接在新标签页打开。</p>
         </div>
         <div className="external-actions">
-          {material.videoLink ? (
-            <a className="primary-external-link" href={material.videoLink} rel="noreferrer" target="_blank">
-              打开视频
+          {links.directVideo ? (
+            <a className="primary-external-link" href={links.directVideo.href} rel="noreferrer" target="_blank">
+              {links.directVideo.label}
             </a>
           ) : (
             <span className="disabled-link">视频链接待补充</span>
           )}
-          {material.originalAdLink ? (
-            <a href={material.originalAdLink} rel="noreferrer" target="_blank">打开原始广告</a>
+          {links.detailPage ? (
+            <a href={links.detailPage.href} rel="noreferrer" target="_blank">{links.detailPage.label}</a>
           ) : null}
           {isPreciseGuangdadaDetail(material.guangdadaDetailLink) ? (
             <a href={material.guangdadaDetailLink ?? undefined} rel="noreferrer" target="_blank">
@@ -60,6 +71,12 @@ export function MaterialDetailPage() {
             <span className="disabled-link">广大大播放详情待补充</span>
           )}
         </div>
+        {links.warning ? (
+          <div className="external-link-note">
+            <p className="link-expiry-note">{links.warning}</p>
+            <span>视频直链采集时间：{links.collectedAt ?? "未提供"}</span>
+          </div>
+        ) : null}
       </section>
 
       <div className="detail-content-grid">
@@ -123,18 +140,34 @@ export function MaterialDetailPage() {
         </div>
       </details>
 
-      <section className="reserved-analysis" aria-labelledby="reserved-title">
+      <section className="script-analysis" aria-labelledby="script-analysis-title">
         <div className="reserved-heading">
           <div>
-            <p className="section-label">RESERVED / NOT PROCESSED</p>
-            <h2 id="reserved-title">脚本规律预留区</h2>
+            <p className="section-label">SCRIPT PATTERN</p>
+            <h2 id="script-analysis-title">脚本规律</h2>
           </div>
-          <span>当前版本不生成</span>
+          <span>已完成分析</span>
         </div>
-        <div className="reserved-grid">
-          <ReservedModule title="脚本总结" />
-          <ReservedModule title="结构与节奏" />
-          <ReservedModule title="情绪曲线" />
+        <div className="script-analysis-grid">
+          <article>
+            <span>SUMMARY</span>
+            <h3>脚本总结</h3>
+            <p>{material.scriptAnalysis.summary}</p>
+          </article>
+          <article>
+            <span>STRUCTURE</span>
+            <h3>结构与节奏</h3>
+            <ol>
+              {material.scriptAnalysis.structureAndRhythm.map((item) => <li key={item}>{item}</li>)}
+            </ol>
+          </article>
+          <article>
+            <span>EMOTION</span>
+            <h3>情绪曲线</h3>
+            <ol>
+              {material.scriptAnalysis.emotionCurve.map((item) => <li key={item}>{item}</li>)}
+            </ol>
+          </article>
         </div>
       </section>
     </div>
@@ -167,16 +200,6 @@ function TagGroup({ label, values }: { label: string; values: string[] }) {
         {values.length > 0 ? values.map((value) => <strong key={value}>{value}</strong>) : "未提供"}
       </div>
     </div>
-  );
-}
-
-function ReservedModule({ title }: { title: string }) {
-  return (
-    <article>
-      <span>预留模块</span>
-      <h3>{title}</h3>
-      <p>模块已预留，当前版本暂不生成。</p>
-    </article>
   );
 }
 

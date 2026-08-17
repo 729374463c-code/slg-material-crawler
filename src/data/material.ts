@@ -1,13 +1,16 @@
 export type ReviewStatus = "confirmed" | "pending_review" | "pending_video";
 
 export type ScriptAnalysis = {
-  summary: null;
-  structureAndRhythm: [];
-  emotionCurve: [];
+  summary: string;
+  structureAndRhythm: string[];
+  emotionCurve: string[];
 };
 
 export type Material = {
   id: string;
+  weekId?: string;
+  adKey?: string;
+  materialId?: string;
   name: string;
   recordName: string;
   company: string;
@@ -55,6 +58,7 @@ export type Material = {
   sellingPointSecondary: string[];
   videoLink: string | null;
   originalAdLink: string | null;
+  videoLinkCollectedAt: string | null;
   guangdadaDetailLink: string | null;
   analysisSource: "人工确认" | "MCP 标签草稿" | "视频解析草稿";
   scriptAnalysis: ScriptAnalysis;
@@ -87,6 +91,110 @@ type MaterialSeed = Omit<
   supportPoints: string[];
 };
 
+const scriptAnalysisById: Record<string, ScriptAnalysis> = {
+  "SLG-WEEK-01": {
+    summary: "以宠物遇险制造即时危机，用画线解谜给出低门槛操作，再以成败反馈形成短循环，最后承接到产品下载。核心规律是危机可视化、操作一步化、结果即时化。",
+    structureAndRhythm: [
+      "开头 0-3 秒：小狗受困，怪物逼近，立即抛出救援任务。",
+      "主体前段：提示画线路径，让观众快速理解唯一操作。",
+      "主体后段：连续展示成功或失败结果，用重复关卡维持节奏。",
+      "结尾：产品名和下载入口完成承接。",
+    ],
+    emotionCurve: ["紧张：宠物遭遇威胁", "参与：观众判断画线路径", "释放：救援成功或失败", "行动：进入下载承接"],
+  },
+  "SLG-WEEK-02": {
+    summary: "用老账号召回和数字清单建立明确的信息缺口，逐条证明回归后的追赶成本更低。内容从省时、不肝推进到成长与奖励，最后以强品牌落版完成召回。",
+    structureAndRhythm: [
+      "开头 0-3 秒：提出回到旧账号的 5 个理由，锁定流失玩家。",
+      "3-9 秒：展示离线升级与等待时间减少，先解决回归阻力。",
+      "9-27 秒：按编号连续呈现训练、建筑、奖励和资源优化。",
+      "27-35 秒：Logo、双商店标识和 PLAY NOW 完成行动承接。",
+    ],
+    emotionCurve: ["熟悉：品牌场景唤醒记忆", "好奇：五个理由形成信息缺口", "安心：追赶成本被逐项消除", "行动：明确下载与回归"],
+  },
+  "SLG-WEEK-03": {
+    summary: "直接展示村庄建设、资源收集和奖励增长，通过连续升级反馈强化经营爽感。脚本不依赖复杂叙事，而是用可见数值增长证明长期成长价值。",
+    structureAndRhythm: [
+      "开头 0-4 秒：品牌基地与建设场景直接建立玩法认知。",
+      "4-14 秒：收集资源和宝箱，快速给出正向奖励。",
+      "14-28 秒：建筑升级与村庄扩张连续推进，放大成长感。",
+      "28-35 秒：品牌与下载引导收束。",
+    ],
+    emotionCurve: ["熟悉：进入品牌村庄", "满足：资源与宝箱到账", "上升：建筑和数值持续成长", "行动：下载继续经营"],
+  },
+  "SLG-WEEK-04": {
+    summary: "以强品牌识别和随时开战的承诺切入，在建设与战斗之间交替展示，兼顾经营玩家和战斗玩家。脚本重点是快速证明产品完整度与移动端便利性。",
+    structureAndRhythm: [
+      "开头 0-4 秒：品牌画面配战斗主张，迅速完成产品识别。",
+      "4-14 秒：展示村庄建设和部队组织，建立经营目标。",
+      "14-29 秒：切换进攻、防守和联盟战斗，强化冲突反馈。",
+      "29-35 秒：品牌和安装 CTA 收束。",
+    ],
+    emotionCurve: ["确认：熟悉品牌出现", "期待：建设并组织部队", "高涨：进入战斗冲突", "行动：随时开战的承诺落地"],
+  },
+  "SLG-WEEK-05": {
+    summary: "用敌军压境制造强冲突，以塔防操作提供即时参与，再将击败敌人与资源获取连接到长期经营。核心规律是先用战斗爽感吸引，再用资源目标承接 SLG 成长。",
+    structureAndRhythm: [
+      "开头 0-5 秒：敌军压境和路线危机建立战斗压力。",
+      "5-20 秒：布置防线、释放技能，连续给出即时操作反馈。",
+      "20-45 秒：击败敌军并抢占资源，把战斗结果转成成长收益。",
+      "45-56 秒：展示经营承接并进入品牌安装落版。",
+    ],
+    emotionCurve: ["压力：敌军快速逼近", "专注：布防与技能操作", "释放：击败敌军获得资源", "期待：资源推动长期成长"],
+  },
+  "SLG-WEEK-06": {
+    summary: "先用轻松好玩的承诺降低门槛，再通过画线关卡的成功与失败形成高频反馈，最后把轻玩法用户导向放置与 SLG 长线内容。",
+    structureAndRhythm: [
+      "开头 0-3 秒：用好玩承诺和卡通谜题直接进入操作。",
+      "3-18 秒：展示画线尝试和第一轮结果。",
+      "18-36 秒：更换障碍与路径，重复短关卡循环。",
+      "36-44 秒：产品安装引导承接。",
+    ],
+    emotionCurve: ["轻松：低门槛画面进入", "好奇：判断正确路径", "满足或懊恼：即时结果反馈", "行动：继续挑战更多关卡"],
+  },
+  "SLG-WEEK-07": {
+    summary: "通过倒计时、错误路径和角色危险激发纠错欲，连续关卡把一次判断扩展为多轮挑战。素材依靠压力和验证反馈维持观看，落版较弱。",
+    structureAndRhythm: [
+      "开头 0-3 秒：提出能否画对路径的挑战。",
+      "3-15 秒：倒计时与障碍推动第一次快速决策。",
+      "15-36 秒：连续展示错误、重试和成功结果。",
+      "36-44 秒：以关卡结果和下载跳转简短收尾。",
+    ],
+    emotionCurve: ["挑战：问题直接抛出", "紧张：倒计时压缩判断时间", "挫败与纠错：错误后立即重试", "释放：正确路径完成目标"],
+  },
+  "SLG-WEEK-08": {
+    summary: "以王国危机和军队冲突建立宏观目标，在建设、征兵和战斗之间交替推进，让经营投入迅速转化为战场结果。脚本强调掌控力不断扩大。",
+    structureAndRhythm: [
+      "开头 0-5 秒：王国战场与军队冲突建立危机。",
+      "5-18 秒：建设建筑、训练军队，展示战前准备。",
+      "18-42 秒：多轮战斗与推进证明军力成长。",
+      "42-51 秒：品牌与安装 CTA 完成承接。",
+    ],
+    emotionCurve: ["危机：王国受到威胁", "筹备：建设与征兵积累力量", "高涨：军队投入战斗", "掌控：版图与实力扩大"],
+  },
+  "SLG-WEEK-09": {
+    summary: "用角色被追逐的即时危险吸引注意，在逃脱和金币反馈后转入城堡建设与军队成长。素材通过情绪从生存压力到力量扩张的反转，承接 SLG 经营。",
+    structureAndRhythm: [
+      "开头 0-5 秒：追逐警告和角色逃亡制造即时危险。",
+      "5-18 秒：躲避追兵并收集金币，提供连续动作反馈。",
+      "18-48 秒：转入城堡、军队和势力成长，完成玩法承接。",
+      "48-59 秒：评分文案、品牌和安装 CTA 收束。",
+    ],
+    emotionCurve: ["紧张：角色被追逐", "缓解：成功逃脱并获得金币", "上升：城堡和军队快速成长", "自信：从被追者变为掌控者"],
+  },
+  "SLG-WEEK-10": {
+    summary: "以极寒环境和资源短缺建立长期生存压力，按采集、建设、升级和扩张逐层推进。较长时长用于完整展示从危机到聚落稳定的经营闭环。",
+    structureAndRhythm: [
+      "开头 0-8 秒：极寒、角色和资源危机直接确立生存目标。",
+      "8-30 秒：采集木材、食物和燃料，解决第一层生存问题。",
+      "30-72 秒：建设并升级核心设施，展示聚落逐步稳定。",
+      "72-92 秒：扩张人口与资源循环，强化长期经营目标。",
+      "92-100 秒：品牌与安装 CTA 完成承接。",
+    ],
+    emotionCurve: ["压迫：极寒与资源短缺", "专注：采集基础资源", "缓解：设施建成并维持生存", "满足：聚落扩张形成秩序", "行动：下载继续经营"],
+  },
+};
+
 function createMaterial(seed: MaterialSeed): Material {
   return {
     ...seed,
@@ -108,7 +216,7 @@ function createMaterial(seed: MaterialSeed): Material {
     dateRange: `${seed.dateStart} 至 ${seed.dateEnd}`,
     platforms: [seed.platformName],
     analysisSource: "MCP 标签草稿",
-    scriptAnalysis: { summary: null, structureAndRhythm: [], emotionCurve: [] },
+    scriptAnalysis: scriptAnalysisById[seed.id],
     status: "confirmed",
     statusLabel: "MCP 已补全",
   };
@@ -150,10 +258,11 @@ export const materials: Material[] = [
     dateStart: "2026-07-02",
     dateEnd: "2026-08-03",
     regions: ["英国", "加拿大"],
-    sellingPointPrimary: ["轻玩法获客", "情绪刺激"],
-    sellingPointSecondary: ["画线解谜", "宠物救援", "失败反馈"],
+    sellingPointPrimary: ["副玩法", "美术"],
+    sellingPointSecondary: ["场景", "角色美术"],
     videoLink: "https://www.youtube.com/watch?v=7bALUoR4D7c",
     originalAdLink: "https://www.youtube.com/watch?v=7bALUoR4D7c",
+    videoLinkCollectedAt: null,
     guangdadaDetailLink: "https://guangdada.net/modules/creative/display-ads/detail?channel=youtube&id=1d809c3bcefa511a5837ea5daf873571&type=1&created_at=1783049414&fb_merge=false&search_flag=145459",
   }),
   createMaterial({
@@ -191,10 +300,11 @@ export const materials: Material[] = [
     dateStart: "2025-11-26",
     dateEnd: "2026-08-03",
     regions: ["澳大利亚"],
-    sellingPointPrimary: ["玩家召回", "核心玩法"],
-    sellingPointSecondary: ["省时不肝", "快速变强", "基地建设"],
+    sellingPointPrimary: ["核心玩法", "美术"],
+    sellingPointSecondary: ["模拟经营", "角色美术"],
     videoLink: "https://sp2cdn-idea-global.zingfront.com/sp_opera/0ad50ee0d1cc79761aa691436f2e6097.mp4",
     originalAdLink: "https://www.youtube.com/watch?v=eHNKgqt_qaI",
+    videoLinkCollectedAt: null,
     guangdadaDetailLink: "https://guangdada.net/modules/creative/display-ads/detail?channel=youtube&id=3d5bee4666f975102f4c3287f3e77f3c&type=1&created_at=1764200624&fb_merge=false&search_flag=145359",
   }),
   createMaterial({
@@ -232,10 +342,11 @@ export const materials: Material[] = [
     dateStart: "2025-11-19",
     dateEnd: "2026-08-02",
     regions: ["巴拉圭", "埃及", "哥伦比亚", "奥地利", "缅甸", "荷兰", "沙特阿拉伯", "瑞典", "智利", "委内瑞拉", "哈萨克斯坦", "葡萄牙", "匈牙利", "黎巴嫩", "尼泊尔", "丹麦", "波兰", "意大利", "乌克兰", "伊拉克", "秘鲁", "土耳其", "墨西哥", "斯洛文尼亚", "阿塞拜疆", "南非", "柬埔寨", "芬兰", "西班牙", "巴拿马"],
-    sellingPointPrimary: ["核心玩法", "成长反馈"],
-    sellingPointSecondary: ["基地建设", "宝箱奖励", "数值成长"],
+    sellingPointPrimary: ["核心玩法", "美术"],
+    sellingPointSecondary: ["模拟经营", "场景"],
     videoLink: "https://sp2cdn-idea-global.zingfront.com/sp_opera/86f4870881121ecc50ae807383df8850.mp4",
     originalAdLink: "https://www.youtube.com/watch?v=eHNKgqt_qaI",
+    videoLinkCollectedAt: null,
     guangdadaDetailLink: "https://guangdada.net/modules/creative/display-ads/detail?channel=youtube&id=766f09e1c50b2db3cdeb9b974220890e&type=1&created_at=1764323909&fb_merge=false&search_flag=145359",
   }),
   createMaterial({
@@ -273,10 +384,11 @@ export const materials: Material[] = [
     dateStart: "2026-05-25",
     dateEnd: "2026-08-02",
     regions: ["比利时", "法国", "阿曼", "中国台湾", "阿联酋", "英国", "德国"],
-    sellingPointPrimary: ["品牌识别", "核心玩法"],
-    sellingPointSecondary: ["随时开战", "村庄建设", "联盟竞争"],
+    sellingPointPrimary: ["核心玩法", "题材与世界观"],
+    sellingPointSecondary: ["模拟经营", "世界观展示"],
     videoLink: "https://www.youtube.com/watch?v=eHNKgqt_qaI",
     originalAdLink: "https://www.youtube.com/watch?v=eHNKgqt_qaI",
+    videoLinkCollectedAt: null,
     guangdadaDetailLink: "https://guangdada.net/modules/creative/display-ads/detail?channel=youtube&id=cbfdaf7917d258d58e121bf5479e3ec8&type=1&created_at=1770399273&fb_merge=false&search_flag=145458",
   }),
   createMaterial({
@@ -314,10 +426,11 @@ export const materials: Material[] = [
     dateStart: "2026-04-30",
     dateEnd: "2026-08-04",
     regions: ["瑞典"],
-    sellingPointPrimary: ["核心玩法", "战斗体验"],
-    sellingPointSecondary: ["塔防", "资源争夺", "技能释放"],
+    sellingPointPrimary: ["核心玩法", "题材与世界观"],
+    sellingPointSecondary: ["场景", "世界观展示"],
     videoLink: "https://sp2cdn-idea-global.zingfront.com/sp_opera/2f7233d384428dc1b17c29ce7164cda6.mp4",
     originalAdLink: "https://www.youtube.com/watch?v=2VikIR_EvnE",
+    videoLinkCollectedAt: null,
     guangdadaDetailLink: "https://guangdada.net/modules/creative/display-ads/detail?channel=youtube&id=afc243631b79e128fd728328ac064e63&type=1&created_at=1753192635&fb_merge=false&search_flag=145359",
   }),
   createMaterial({
@@ -355,10 +468,11 @@ export const materials: Material[] = [
     dateStart: "2026-02-06",
     dateEnd: "2026-08-02",
     regions: ["泰国", "缅甸", "老挝", "美国", "柬埔寨"],
-    sellingPointPrimary: ["轻玩法获客", "休闲体验"],
-    sellingPointSecondary: ["画线解谜", "失败重试", "放置包装"],
+    sellingPointPrimary: ["副玩法", "美术"],
+    sellingPointSecondary: ["场景", "角色美术"],
     videoLink: "https://www.youtube.com/watch?v=Fui4Ur28glk",
     originalAdLink: "https://www.youtube.com/watch?v=Fui4Ur28glk",
+    videoLinkCollectedAt: null,
     guangdadaDetailLink: "https://guangdada.net/modules/creative/display-ads/detail?channel=youtube&id=c5b3e5160b41e388ea5f8bc5cb9cd8bd&type=1&created_at=1770396227&fb_merge=false&search_flag=145458",
   }),
   createMaterial({
@@ -396,10 +510,11 @@ export const materials: Material[] = [
     dateStart: "2025-09-19",
     dateEnd: "2026-08-02",
     regions: ["印度尼西亚"],
-    sellingPointPrimary: ["轻玩法获客", "情绪刺激"],
-    sellingPointSecondary: ["画线解谜", "倒计时", "失败重试"],
+    sellingPointPrimary: ["副玩法", "美术"],
+    sellingPointSecondary: ["场景", "角色美术"],
     videoLink: "https://sp2cdn-idea-global.zingfront.com/sp_opera/8940c4be507f5a19566526d214162935.mp4",
     originalAdLink: "https://www.youtube.com/watch?v=Fui4Ur28glk",
+    videoLinkCollectedAt: null,
     guangdadaDetailLink: "https://guangdada.net/modules/creative/display-ads/detail?channel=youtube&id=fd2a5f22d3eca3cdf5a5c926b4c06ad9&type=1&created_at=1760082453&fb_merge=false&search_flag=145359",
   }),
   createMaterial({
@@ -437,10 +552,11 @@ export const materials: Material[] = [
     dateStart: "2025-01-17",
     dateEnd: "2026-08-03",
     regions: ["中国台湾"],
-    sellingPointPrimary: ["核心玩法", "题材世界观"],
-    sellingPointSecondary: ["策略经营", "军队建设", "资源收集"],
+    sellingPointPrimary: ["核心玩法", "题材与世界观"],
+    sellingPointSecondary: ["模拟经营", "世界观展示"],
     videoLink: "https://sp2cdn-idea-global.zingfront.com/sp_opera/80e8b660ce4a14e4b76eb551c224c7f5.mp4",
     originalAdLink: "https://www.youtube.com/watch?v=4JnCWFQEczA",
+    videoLinkCollectedAt: null,
     guangdadaDetailLink: "https://guangdada.net/modules/creative/display-ads/detail?channel=youtube&id=9cbc870795cb316320bdd19f9a9f9b99&type=1&created_at=1751876482&fb_merge=false&search_flag=145359",
   }),
   createMaterial({
@@ -478,10 +594,11 @@ export const materials: Material[] = [
     dateStart: "2026-06-19",
     dateEnd: "2026-07-30",
     regions: ["巴基斯坦"],
-    sellingPointPrimary: ["情绪刺激", "成长反馈"],
-    sellingPointSecondary: ["追逐危机", "城堡经营", "力量扩张"],
+    sellingPointPrimary: ["美术", "题材与世界观", "核心玩法"],
+    sellingPointSecondary: ["场景", "世界观展示", "模拟经营"],
     videoLink: "https://www.youtube.com/watch?v=ZN9P_r2SAeI",
     originalAdLink: "https://www.youtube.com/watch?v=ZN9P_r2SAeI",
+    videoLinkCollectedAt: null,
     guangdadaDetailLink: "https://guangdada.net/modules/creative/display-ads/detail?channel=youtube&id=768d3b234a4613a2924c69fa3c4cb344&type=1&created_at=1774311608&fb_merge=false&search_flag=145458",
   }),
   createMaterial({
@@ -519,10 +636,11 @@ export const materials: Material[] = [
     dateStart: "2026-06-30",
     dateEnd: "2026-08-03",
     regions: ["美国"],
-    sellingPointPrimary: ["题材世界观", "核心玩法"],
-    sellingPointSecondary: ["极地生存", "建筑升级", "资源经营"],
+    sellingPointPrimary: ["题材与世界观", "核心玩法"],
+    sellingPointSecondary: ["世界观展示", "模拟经营", "场景"],
     videoLink: "https://sp2cdn-idea-global.zingfront.com/sp_opera/08ff5414982f7ede278c24613ef83f65.mp4",
     originalAdLink: "https://www.youtube.com/watch?v=BVBILd17cD8",
+    videoLinkCollectedAt: null,
     guangdadaDetailLink: "https://guangdada.net/modules/creative/display-ads/detail?channel=youtube&id=24ec61fd3524168f45ec93916fb9c843&type=1&created_at=1758526101&fb_merge=false&search_flag=145359",
   }),
 ];

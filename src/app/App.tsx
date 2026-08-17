@@ -5,6 +5,7 @@ import { MaterialsPage } from "../pages/MaterialsPage";
 import { MaterialDetailPage } from "../pages/MaterialDetailPage";
 import { MethodologyPage } from "../pages/MethodologyPage";
 import { OverviewPage } from "../pages/OverviewPage";
+import { WeeklyReviewPage } from "../pages/WeeklyReviewPage";
 
 export function App() {
   const Router = typeof window === "undefined" ? MemoryRouter : HashRouter;
@@ -17,6 +18,7 @@ export function App() {
           <Route path="materials" element={<MaterialsPage />} />
           <Route path="materials/:materialId" element={<MaterialDetailPage />} />
           <Route path="compare" element={<ComparePage />} />
+          <Route path="weekly-review" element={<WeeklyReviewPage />} />
           <Route path="methodology" element={<MethodologyPage />} />
         </Route>
       </Routes>
