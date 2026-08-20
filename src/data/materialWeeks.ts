@@ -1,5 +1,11 @@
 import { materials as firstWeekMaterials, type Material } from "./material";
 import { dataeyeDomesticTestMaterials } from "./dataeyeDomesticTestMaterials";
+import { adxSixGameGroups, adxSixGameMaterials } from "./adxSixGameMaterials";
+import {
+  sevenGameResearchGroups,
+  sevenGameResearchMaterials,
+  type SevenGameResearchGroup,
+} from "./sevenGameResearch";
 
 export type MaterialWeek = {
   id: string;
@@ -9,6 +15,9 @@ export type MaterialWeek = {
   sourceNote: string;
   sourceName?: string;
   market?: string;
+  archiveType?: "weekly" | "domestic-test" | "special-research" | "adx-special-research";
+  defaultSort?: "display" | "heat" | "days" | "recent";
+  researchGroups?: SevenGameResearchGroup[];
   materials: Material[];
 };
 
@@ -435,9 +444,36 @@ export const materialWeeks: MaterialWeek[] = [
     sourceNote: "4X SLG 热门视频榜；素材、视频与历史周去重",
     materials: secondWeekSeeds.map(createWeeklyMaterial),
   },
+  {
+    id: "gdd-seven-games-2026-08",
+    label: "五品类专项调研",
+    snapshotDate: "2026-08-18",
+    sourcePeriod: "2026-07-01 至 2026-08-18",
+    sourceNote: "五款指定游戏的高热视频专项批次",
+    sourceName: "广大大 MCP",
+    market: "全球",
+    archiveType: "special-research",
+    defaultSort: "heat",
+    researchGroups: sevenGameResearchGroups,
+    materials: sevenGameResearchMaterials,
+  },
+  {
+    id: "adx-six-games-2026-08",
+    label: "ADX 指定游戏专项调研",
+    snapshotDate: "2026-08-19",
+    sourcePeriod: "2026-07-01 至 2026-08-19",
+    sourceNote: "严格筛选曝光超过 100 万、投放超过 30 天且持续至 2026 年 7—8 月的视频素材",
+    sourceName: "DataEye AdXray",
+    market: "中国大陆",
+    archiveType: "adx-special-research",
+    defaultSort: "heat",
+    researchGroups: adxSixGameGroups,
+    materials: adxSixGameMaterials,
+  },
 ];
 
-export const latestMaterialWeek = materialWeeks.at(-1)!;
+export const latestMaterialWeek =
+  materialWeeks.findLast((week) => !week.archiveType) ?? materialWeeks.at(-1)!;
 export const allMaterials = materialWeeks.flatMap((week) => week.materials);
 
 function seed(

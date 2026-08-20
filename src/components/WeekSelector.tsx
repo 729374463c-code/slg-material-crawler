@@ -4,11 +4,18 @@ import { useMaterialWeek } from "../data/useMaterialWeek";
 
 export function WeekSelector() {
   const { selectedWeek, selectWeek } = useMaterialWeek();
+  const archiveLabel = selectedWeek.archiveType === "special-research"
+    ? "SPECIAL RESEARCH"
+    : selectedWeek.archiveType === "adx-special-research"
+      ? "ADX DOMESTIC RESEARCH"
+    : selectedWeek.market === "国内"
+      ? "DOMESTIC TEST SET"
+      : "WEEKLY ARCHIVE";
 
   return (
     <section className="week-selector" aria-label="选择素材周次">
       <div>
-        <span>{selectedWeek.market === "国内" ? "DOMESTIC TEST SET" : "WEEKLY ARCHIVE"}</span>
+        <span>{archiveLabel}</span>
         <strong>{selectedWeek.label} · {selectedWeek.snapshotDate}</strong>
         <small>
           数据周期：{selectedWeek.sourcePeriod} · {selectedWeek.sourceNote}

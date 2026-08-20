@@ -13,6 +13,7 @@ export type MaterialExternalLinks = {
 };
 
 const DATAEYE_DETAIL_PREFIX = "https://adxray.dataeye.com/index/home#/Product/Plan/";
+const GUANGDADA_DETAIL_PATH = "guangdada.net/modules/creative/display-ads/detail";
 const DATAEYE_EXPIRY_WARNING = "视频直链为临时地址；无法打开时请使用 AdXray 详情页。";
 
 export function getMaterialExternalLinks(material: Material): MaterialExternalLinks {
@@ -44,7 +45,9 @@ export function getMaterialExternalLinks(material: Material): MaterialExternalLi
       : null,
     detailPage: hasDistinctDetailPage
       ? {
-          label: "打开原始广告",
+          label: material.originalAdLink!.includes(GUANGDADA_DETAIL_PATH)
+            ? "广大大详情"
+            : "打开原始广告",
           href: material.originalAdLink!,
         }
       : null,

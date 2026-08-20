@@ -1,6 +1,5 @@
 import { ArrowLeft } from "@carbon/icons-react";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { isPreciseGuangdadaDetail } from "../data/materialExport";
 import { getMaterialExternalLinks } from "../data/materialLinks";
 import { allMaterials } from "../data/materialWeeks";
 import { withWeek } from "../data/useMaterialWeek";
@@ -63,13 +62,6 @@ export function MaterialDetailPage() {
           {links.detailPage ? (
             <a href={links.detailPage.href} rel="noreferrer" target="_blank">{links.detailPage.label}</a>
           ) : null}
-          {isPreciseGuangdadaDetail(material.guangdadaDetailLink) ? (
-            <a href={material.guangdadaDetailLink ?? undefined} rel="noreferrer" target="_blank">
-              查看广大大播放详情
-            </a>
-          ) : (
-            <span className="disabled-link">广大大播放详情待补充</span>
-          )}
         </div>
         {links.warning ? (
           <div className="external-link-note">

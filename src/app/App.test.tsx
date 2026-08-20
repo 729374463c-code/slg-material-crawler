@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { materials } from "../data/material";
 import { dataeyeDomesticTestMaterials } from "../data/dataeyeDomesticTestMaterials";
 import { buildMaterialsWorkbook } from "../data/materialExport";
+import { sevenGameResearchMaterials } from "../data/sevenGameResearch";
 import { App } from "./App";
 
 beforeEach(() => {
@@ -42,10 +43,7 @@ test("opens external evidence and shows completed script analysis", async () => 
     "href",
     "https://www.youtube.com/watch?v=eHNKgqt_qaI",
   );
-  expect(screen.getByRole("link", { name: "查看广大大播放详情" })).toHaveAttribute(
-    "href",
-    expect.stringContaining("display-ads/detail"),
-  );
+  expect(screen.queryByRole("link", { name: "查看广大大播放详情" })).not.toBeInTheDocument();
   expect(screen.getByRole("link", { name: "返回竞品吸量素材调研" })).toBeInTheDocument();
   expect(screen.getByRole("heading", { name: "脚本规律" })).toBeInTheDocument();
   expect(screen.getByText("已完成分析")).toBeInTheDocument();
@@ -120,4 +118,28 @@ test("explains how to reach every column in the material table", async () => {
   const tableRegion = screen.getByRole("region", { name: "竞品吸量素材调研数据" });
   expect(tableRegion).toHaveAttribute("aria-describedby", "materials-scroll-hint");
   expect(screen.getByText("左右拖动表格查看全部字段，滚动时产品信息和表头会保持可见。")).toBeInTheDocument();
+});
+
+test("keeps the five-game Guangdada research separate from weekly and DataEye batches", async () => {
+  const user = userEvent.setup();
+  render(<App />);
+
+  await user.click(screen.getByRole("link", { name: "竞品吸量素材调研" }));
+  await user.selectOptions(screen.getByLabelText("查看历史周"), "gdd-seven-games-2026-08");
+
+  expect(sevenGameResearchMaterials).toHaveLength(100);
+  expect(screen.getAllByTestId("material-data-row")).toHaveLength(100);
+  expect(screen.queryByRole("region", { name: "五品类专项调研" })).not.toBeInTheDocument();
+  expect(screen.getAllByRole("link", { name: "广大大详情" })).toHaveLength(100);
+  expect(screen.queryByRole("link", { name: "打开原始广告" })).not.toBeInTheDocument();
+  expect(screen.queryByText("广大大 MCP / 七品类专项调研 2026-08")).not.toBeInTheDocument();
+  expect(screen.getByLabelText("游戏种类")).toHaveDisplayValue("全部游戏");
+  expect(screen.getByLabelText("游戏种类").querySelectorAll("option")).toHaveLength(6);
+  expect(screen.queryByRole("option", { name: "永远的蔚蓝星球" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("option", { name: "梦境护卫队" })).not.toBeInTheDocument();
+  expect(screen.getByRole("option", { name: "Gear Defenders（齿轮防卫队）" })).toBeInTheDocument();
+  await user.selectOptions(screen.getByLabelText("游戏种类"), "Gear Defenders");
+  expect(screen.getAllByTestId("material-data-row")).toHaveLength(20);
+  expect(screen.getAllByRole("link", { name: "Gear Defenders（齿轮防卫队）" })).toHaveLength(20);
+  expect(screen.getByLabelText("排序")).toHaveValue("heat");
 });

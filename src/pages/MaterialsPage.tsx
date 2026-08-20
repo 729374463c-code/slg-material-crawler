@@ -1,30 +1,41 @@
 import { Button, Select, SelectItem } from "@carbon/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { WeekSelector } from "../components/WeekSelector";
 import {
   buildMaterialsWorkbook,
   getMaterialRanks,
-  isPreciseGuangdadaDetail,
+  getProductHeatRanks,
   sortMaterials,
 } from "../data/materialExport";
 import type { MaterialSortKey } from "../data/materialExport";
 import { getMaterialExternalLinks } from "../data/materialLinks";
+import { buildSevenGameResearchWorkbook } from "../data/sevenGameResearchExport";
+import { getSevenGameDisplayName } from "../data/sevenGameNames";
 import { useMaterialWeek, withWeek } from "../data/useMaterialWeek";
 
 export function MaterialsPage() {
   const { selectedWeek } = useMaterialWeek();
   const materials = selectedWeek.materials;
-  const ranks = getMaterialRanks(materials);
+  const isSevenGameResearch = selectedWeek.archiveType === "special-research";
+  const isAdxGameResearch = selectedWeek.archiveType === "adx-special-research";
+  const isGameResearch = isSevenGameResearch || isAdxGameResearch;
+  const ranks = isGameResearch ? getProductHeatRanks(materials) : getMaterialRanks(materials);
   const [search, setSearch] = useState("");
+  const [game, setGame] = useState("all");
   const [platform, setPlatform] = useState("all");
   const [region, setRegion] = useState("all");
   const [sellingPoint, setSellingPoint] = useState("all");
-  const [sortKey, setSortKey] = useState<MaterialSortKey>("display");
+  const [sortKey, setSortKey] = useState<MaterialSortKey>(selectedWeek.defaultSort ?? "display");
+
+  useEffect(() => {
+    setSortKey(selectedWeek.defaultSort ?? "display");
+  }, [selectedWeek.defaultSort, selectedWeek.id]);
 
   const platformOptions = unique(materials.flatMap((item) => item.platforms));
   const regionOptions = unique(materials.flatMap((item) => item.regions));
   const sellingPointOptions = unique(materials.flatMap((item) => item.sellingPointPrimary));
+  const gameOptions = (selectedWeek.researchGroups ?? []).map((group) => group.name);
   const expiryWarning = materials.map(getMaterialExternalLinks).find((links) => links.warning)?.warning;
 
   const filteredMaterials = useMemo(() => {
@@ -34,12 +45,14 @@ export function MaterialsPage() {
         !keyword ||
         item.name.toLocaleLowerCase().includes(keyword) ||
         item.company.toLocaleLowerCase().includes(keyword);
+      const matchesGame = game === "all" || item.name === game;
       const matchesPlatform = platform === "all" || item.platforms.includes(platform);
       const matchesRegion = region === "all" || item.regions.includes(region);
       const matchesSellingPoint =
         sellingPoint === "all" || item.sellingPointPrimary.includes(sellingPoint);
       return (
         matchesSearch &&
+        matchesGame &&
         matchesPlatform &&
         matchesRegion &&
         matchesSellingPoint
@@ -47,10 +60,11 @@ export function MaterialsPage() {
     });
 
     return sortMaterials(filtered, sortKey);
-  }, [materials, platform, region, search, sellingPoint, sortKey]);
+  }, [game, materials, platform, region, search, sellingPoint, sortKey]);
 
   function clearFilters() {
     setSearch("");
+    setGame("all");
     setPlatform("all");
     setRegion("all");
     setSellingPoint("all");
@@ -58,7 +72,16 @@ export function MaterialsPage() {
   }
 
   async function exportCurrentResults() {
-    const workbook = await buildMaterialsWorkbook(filteredMaterials, materials);
+    const workbook = isSevenGameResearch
+      ? await buildSevenGameResearchWorkbook(
+          (selectedWeek.researchGroups ?? []).map((group) => ({
+            ...group,
+            materials: group.materials.filter((material) =>
+              filteredMaterials.some((current) => current.id === material.id),
+            ),
+          })),
+        )
+      : await buildMaterialsWorkbook(filteredMaterials, materials);
     const url = URL.createObjectURL(
       new Blob([workbook], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -99,32 +122,46 @@ export function MaterialsPage() {
       <section className="dataset-scope" aria-label="数据口径">
         <div>
           <span>分类</span>
-          <strong>策略：4X SLG</strong>
+          <strong>{isSevenGameResearch ? "五个指定游戏品类" : isAdxGameResearch ? "三个符合硬门槛的指定游戏" : "策略：4X SLG"}</strong>
         </div>
         <div>
           <span>地区</span>
-          <strong>不限地区</strong>
+          <strong>{isAdxGameResearch ? "中国大陆" : "不限地区"}</strong>
         </div>
         <div>
           <span>排序基准</span>
-          <strong>展示估值</strong>
+          <strong>{isGameResearch ? "游戏内按综合表现排序" : "展示估值"}</strong>
         </div>
         <div>
           <span>模块边界</span>
-          <strong>不含创意拆解</strong>
+          <strong>{isSevenGameResearch ? "独立于周次与 AdX" : isAdxGameResearch ? "独立 ADX 专项批次" : "不含创意拆解"}</strong>
         </div>
       </section>
 
       <section className="table-toolbar" aria-label="素材筛选与排序">
-        <label className="search-field">
-          <span>产品或公司</span>
-          <input
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="搜索产品或公司"
-            type="search"
-            value={search}
-          />
-        </label>
+        {isGameResearch ? (
+          <Select
+            id="game-filter"
+            labelText="游戏种类"
+            onChange={(event) => setGame(event.target.value)}
+            value={game}
+          >
+            <SelectItem text="全部游戏" value="all" />
+            {gameOptions.map((option) => (
+              <SelectItem key={option} text={getSevenGameDisplayName(option)} value={option} />
+            ))}
+          </Select>
+        ) : (
+          <label className="search-field">
+            <span>产品或公司</span>
+            <input
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="搜索产品或公司"
+              type="search"
+              value={search}
+            />
+          </label>
+        )}
         <Select
           id="platform-filter"
           labelText="广告平台"
@@ -184,7 +221,12 @@ export function MaterialsPage() {
         </p>
         {filteredMaterials.length > 0 ? (
           <div className="materials-table-scroll">
-            <table className="materials-table">
+            <table className={`materials-table${isGameResearch ? " compact-research-table" : ""}`}>
+              {isGameResearch ? (
+                <colgroup>
+                  {Array.from({ length: 14 }, (_, index) => <col key={index} />)}
+                </colgroup>
+              ) : null}
               <thead>
                 <tr className="table-groups">
                   <th colSpan={2} scope="colgroup">产品与素材</th>
@@ -215,9 +257,11 @@ export function MaterialsPage() {
                   return (
                   <tr data-testid="material-data-row" key={material.id}>
                     <td className="product-cell">
-                      <Link to={withWeek(`/materials/${material.id}`, selectedWeek.id)}>{material.name}</Link>
+                      <Link to={withWeek(`/materials/${material.id}`, selectedWeek.id)}>
+                        {isSevenGameResearch ? getSevenGameDisplayName(material.name) : material.name}
+                      </Link>
                       <span>{material.company}</span>
-                      <small>{material.dataSource}</small>
+                      {!isGameResearch ? <small>{material.dataSource}</small> : null}
                     </td>
                     <td className="link-cell">
                       {links.directVideo ? (
@@ -230,16 +274,6 @@ export function MaterialsPage() {
                       {links.detailPage ? (
                         <a className="secondary-table-link" href={links.detailPage.href} rel="noreferrer" target="_blank">
                           {links.detailPage.label}
-                        </a>
-                      ) : null}
-                      {isPreciseGuangdadaDetail(material.guangdadaDetailLink) ? (
-                        <a
-                          className="secondary-table-link"
-                          href={material.guangdadaDetailLink ?? undefined}
-                          rel="noreferrer"
-                          target="_blank"
-                        >
-                          广大大详情
                         </a>
                       ) : null}
                     </td>

@@ -37,6 +37,25 @@ export function getMaterialRanks(items: Material[]) {
   );
 }
 
+export function getProductHeatRanks(items: Material[]) {
+  const ranks = new Map<string, number>();
+  const products = new Map<string, Material[]>();
+
+  for (const material of items) {
+    const group = products.get(material.name) ?? [];
+    group.push(material);
+    products.set(material.name, group);
+  }
+
+  for (const group of products.values()) {
+    sortMaterials(group, "heat").forEach((material, index) => {
+      ranks.set(material.id, index + 1);
+    });
+  }
+
+  return ranks;
+}
+
 export async function buildMaterialsWorkbook(items: Material[], allMaterials: Material[]) {
   const { default: ExcelJSRuntime } = await import("exceljs");
   const workbook = new ExcelJSRuntime.Workbook();
