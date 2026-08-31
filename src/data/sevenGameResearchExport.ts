@@ -18,22 +18,31 @@ const headers = [
   "结构与节奏",
 ];
 
-export async function buildSevenGameResearchWorkbook(groups: SevenGameResearchGroup[]) {
+type ResearchWorkbookOptions = {
+  worksheetName?: string;
+  sourceLine?: string;
+  criteriaLine?: string;
+};
+
+export async function buildSevenGameResearchWorkbook(
+  groups: SevenGameResearchGroup[],
+  options: ResearchWorkbookOptions = {},
+) {
   const { default: ExcelJSRuntime } = await import("exceljs");
   const workbook = new ExcelJSRuntime.Workbook();
   workbook.creator = "竞品吸量素材调研";
   workbook.created = new Date();
 
-  const worksheet = workbook.addWorksheet("五品类专项调研", {
+  const worksheet = workbook.addWorksheet(options.worksheetName ?? "五品类专项调研", {
     views: [{ state: "frozen", xSplit: 2, ySplit: 3 }],
     pageSetup: { orientation: "landscape", fitToPage: true, fitToWidth: 1 },
   });
 
   worksheet.addRow([
-    "【数据源】广大大　【扫描平台】iOS+安卓　【扫描时间】2026年8月　【扫描地区】全球",
+    options.sourceLine ?? "【数据源】广大大　【扫描平台】iOS+安卓　【扫描时间】2026年8月　【扫描地区】全球",
     "",
     "",
-    "筛选TOP素材的标准：①按广大大热度排序。②投放天数 >30天。③展现量 >200K。④投放时间至少持续至2026年7-8月。⑤排除与产品无关及骗热度素材。",
+    options.criteriaLine ?? "筛选TOP素材的标准：①按广大大热度排序。②投放天数 >30天。③展现量 >200K。④投放时间至少持续至2026年7-8月。⑤排除与产品无关及骗热度素材。",
   ]);
   worksheet.addRow([
     "产品信息",
@@ -83,8 +92,8 @@ export async function buildSevenGameResearchWorkbook(groups: SevenGameResearchGr
       ]);
       row.height = 112;
       const linkCell = row.getCell(2);
-      linkCell.note = material.guangdadaDetailLink
-        ? `广大大详情页：${material.guangdadaDetailLink}`
+      linkCell.note = material.originalAdLink
+        ? `${material.dataSource === "DataEye AdXray" ? "AdXray" : "广大大"}详情页：${material.originalAdLink}`
         : "";
     });
     const endRow = worksheet.rowCount;

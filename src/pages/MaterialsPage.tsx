@@ -19,6 +19,7 @@ export function MaterialsPage() {
   const materials = selectedWeek.materials;
   const isSevenGameResearch = selectedWeek.archiveType === "special-research";
   const isAdxGameResearch = selectedWeek.archiveType === "adx-special-research";
+  const isTwoProductResearch = selectedWeek.id === "two-products-2026-08-31";
   const isGameResearch = isSevenGameResearch || isAdxGameResearch;
   const ranks = isGameResearch ? getProductHeatRanks(materials) : getMaterialRanks(materials);
   const [search, setSearch] = useState("");
@@ -37,6 +38,9 @@ export function MaterialsPage() {
   const sellingPointOptions = unique(materials.flatMap((item) => item.sellingPointPrimary));
   const gameOptions = (selectedWeek.researchGroups ?? []).map((group) => group.name);
   const expiryWarning = materials.map(getMaterialExternalLinks).find((links) => links.warning)?.warning;
+  const linkWarning = isTwoProductResearch && expiryWarning
+    ? "心动小镇的 ADXray 视频直链为临时地址；无法打开时请使用对应的 AdXray 详情页。"
+    : expiryWarning;
 
   const filteredMaterials = useMemo(() => {
     const keyword = search.trim().toLocaleLowerCase();
@@ -80,6 +84,13 @@ export function MaterialsPage() {
               filteredMaterials.some((current) => current.id === material.id),
             ),
           })),
+          isTwoProductResearch
+            ? {
+                worksheetName: "两产品专项调研",
+                sourceLine: "【数据源】广大大 + DataEye AdXray　【扫描时间】2026年8月　【扫描地区】全球 / 中国大陆",
+                criteriaLine: "筛选标准：广大大按热度排序，投放 >30天、展现 >200K；ADXray按曝光与投放天数综合排序，投放 >30天、曝光 >100万；均持续至2026年7-8月并按视频去重。",
+              }
+            : undefined,
         )
       : await buildMaterialsWorkbook(filteredMaterials, materials);
     const url = URL.createObjectURL(
@@ -117,16 +128,16 @@ export function MaterialsPage() {
 
       <WeekSelector />
 
-      {expiryWarning ? <p className="link-expiry-note">{expiryWarning}</p> : null}
+      {linkWarning ? <p className="link-expiry-note">{linkWarning}</p> : null}
 
       <section className="dataset-scope" aria-label="数据口径">
         <div>
           <span>分类</span>
-          <strong>{isSevenGameResearch ? "五个指定游戏品类" : isAdxGameResearch ? "三个符合硬门槛的指定游戏" : "策略：4X SLG"}</strong>
+          <strong>{isTwoProductResearch ? "两个指定产品 / 三个来源组" : isSevenGameResearch ? "五个指定游戏品类" : isAdxGameResearch ? "三个符合硬门槛的指定游戏" : "策略：4X SLG"}</strong>
         </div>
         <div>
           <span>地区</span>
-          <strong>{isAdxGameResearch ? "中国大陆" : "不限地区"}</strong>
+          <strong>{isTwoProductResearch ? "全球 / 中国大陆" : isAdxGameResearch ? "中国大陆" : "不限地区"}</strong>
         </div>
         <div>
           <span>排序基准</span>
@@ -134,7 +145,7 @@ export function MaterialsPage() {
         </div>
         <div>
           <span>模块边界</span>
-          <strong>{isSevenGameResearch ? "独立于周次与 AdX" : isAdxGameResearch ? "独立 ADX 专项批次" : "不含创意拆解"}</strong>
+          <strong>{isTwoProductResearch ? "独立跨来源专项批次" : isSevenGameResearch ? "独立于周次与 AdX" : isAdxGameResearch ? "独立 ADX 专项批次" : "不含创意拆解"}</strong>
         </div>
       </section>
 

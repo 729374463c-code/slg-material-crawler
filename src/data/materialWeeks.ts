@@ -2,6 +2,10 @@ import { materials as firstWeekMaterials, type Material } from "./material";
 import { dataeyeDomesticTestMaterials } from "./dataeyeDomesticTestMaterials";
 import { adxSixGameGroups, adxSixGameMaterials } from "./adxSixGameMaterials";
 import {
+  twoProductResearchGroups,
+  twoProductResearchMaterials,
+} from "./twoProductResearch";
+import {
   sevenGameResearchGroups,
   sevenGameResearchMaterials,
   type SevenGameResearchGroup,
@@ -469,6 +473,19 @@ export const materialWeeks: MaterialWeek[] = [
     defaultSort: "heat",
     researchGroups: adxSixGameGroups,
     materials: adxSixGameMaterials,
+  },
+  {
+    id: "two-products-2026-08-31",
+    label: "姜饼人王国 / 心动小镇专项调研",
+    snapshotDate: "2026-08-31",
+    sourcePeriod: "2026-07-01 至 2026-08-31",
+    sourceNote: "姜饼人王国（广大大）与心动小镇（广大大 / ADXray）跨来源专项调研",
+    sourceName: "广大大 MCP + DataEye AdXray",
+    market: "全球 / 中国大陆",
+    archiveType: "special-research",
+    defaultSort: "heat",
+    researchGroups: twoProductResearchGroups,
+    materials: twoProductResearchMaterials,
   },
 ];
 
