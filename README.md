@@ -36,7 +36,85 @@
 
 > 筛选门槛按批次确定，不存在所有游戏通用的固定“百万曝光、30天”要求。采集与发布需要人工确认，本仓库不默认开启无人值守的每周任务。
 
-## 本地运行
+## 新用户：先选择使用方式
+
+| 你的目的 | 需要做什么 |
+| --- | --- |
+| 只查看仓库已有网站数据 | 按“本地运行”启动，不需要平台账号 |
+| 采集新素材，只要 Excel | 配置下面的数据来源，再按 [Excel 独立交付指南](docs/excel-only-guide.md) 执行；**不用启动、修改或部署网站** |
+| 采集后更新网站 | 先完成采集、分析及核验，再单独安排网站数据更新、本地预览和发布 |
+
+### 1. 准备工具和自己的账号
+
+- 安装 Node.js（建议 22 LTS）、Git，以及支持 MCP 的 AI 客户端。以下以 Codex 为例；其他客户端需转换为其配置格式。
+- 使用自己的广大大 / ADXray 账号，确认能查询目标市场、查看广告详情及所需指标。网站会员权限与 API/MCP 权限不一定相同。
+- MCP 是让 AI 调用数据或浏览器工具的连接方式；**下载这个仓库，不等于安装了 MCP，也不包含作者的账号或额度**。
+- 仅导出 Excel 时，需要 AI 执行环境支持生成文件，并具备 Excel 写入库，例如 Node.js 的 ExcelJS。仓库已声明 ExcelJS 依赖，运行 `pnpm install` 后可供本地导出脚本使用。
+
+### 2. 配置广大大 MCP
+
+1. 向广大大 / ZingAPI 服务提供方申请自己的 MCP 接入权限，取得**服务地址、认证方式及查询额度**。本仓库不提供公共免认证地址，也不分发服务端。
+2. 在 AI 客户端添加该服务，使用提供方给出的配置。若提供方使用 HTTP + Bearer Token，可参考以下 Codex 配置；若是 OAuth、专用请求头或本地启动命令，必须按提供方说明调整。
+3. 在 Windows 的 `%USERPROFILE%\.codex\config.toml` 中添加以下配置，注意不要覆盖已有配置：
+
+```toml
+# 模板：必须替换地址，并在本机安全设置对应环境变量
+[mcp_servers.guangdada]
+url = "https://YOUR_PROVIDER_HOST/YOUR_MCP_PATH"
+bearer_token_env_var = "GUANGDADA_MCP_TOKEN"
+```
+
+在系统环境变量中设置 `GUANGDADA_MCP_TOKEN`，保存自己的凭证后重新打开客户端，使其继承环境变量。不要将值贴进 README、聊天记录或 Git；如果提供方将凭证放在 URL 中，整个 URL 也必须保密。
+
+4. 查看客户端工具列表是否出现服务工具。本项目使用过的工具包括 `search_creatives`、`creative_detail` 和 `dictionary_lookup`，但应以实际连接版本为准。
+5. 先让 AI 查询一个明确游戏的一条视频素材，再打开详情，核对广告 ID、产品、媒体、曝光/展示估值、投放日期及详情页链接。确认成功后再做 3–5 条小批量验证，最后执行正式批次。
+
+可直接发送给 AI：
+
+> 使用已连接的广大大 MCP，先检查工具和参数说明，搜索我指定游戏的一条视频广告并获取详情。仅验证产品、投放指标、链接和字段来源；不要批量采集或更新网站。分类、国家及媒体参数先查询字典，不沿用旧文档中的 ID。不要输出任何密钥。
+
+配置语法参考 [Codex 官方 MCP 文档](https://developers.openai.com/codex/mcp)。没有服务地址或权限时，请先联系服务提供方；安装前端依赖不会解决平台接入问题。
+
+### 3. 配置 ADXray：数据 MCP 或 Playwright 浏览器
+
+**已有 ADX 数据 MCP 权限时：**使用服务提供方给出的地址、认证方式和工具说明添加连接；HTTP Bearer 配置可参照上节，另命名为 `adx`，使用独立的 `ADX_MCP_TOKEN`。本项目环境可见 `search_game_products`、`search_game_materials`、`get_game_material_distributions` 等工具，但这些服务**不随仓库分发**，也不保证每个账号均可使用。先核对产品 ID，再验证一条素材的完整信息。平台字段不等于已完成视频内容分析。
+
+**没有数据 MCP 时：**使用 Playwright MCP 打开 ADXray，由本人登录后采集。不要购买或复制作者的登录态。
+
+1. 在 Codex 已安装且命令可用的终端中运行：
+
+```bash
+codex mcp add playwright -- npx -y @playwright/mcp@latest
+```
+
+也可以在 Codex 的个人 `config.toml` 中添加下面配置（二选一，避免重复添加）：
+
+```toml
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@latest"]
+```
+
+2. 重新加载客户端连接，确认能调用 `browser_navigate`、`browser_snapshot` 等工具。若提示浏览器未安装，按工具提示安装其所需浏览器。
+3. 告诉 AI：“用 Playwright MCP 打开 https://adxray.dataeye.com/index/home#/Material ，等待我登录。”在**工具实际打开的浏览器窗口**登录；其他 Chrome、Edge 或内置浏览器已登录，不代表这个会话已登录。验证码、安全验证由本人完成。
+4. 登录后告诉 AI 搜索目标游戏，打开一条广告，读取曝光、累计使用天数、投放周期、媒体及真实广告详情页链接。先完成单条验证，再串行验证 3–5 条；不要一开始批量开页面。
+5. 正式采集保持**一个账号、一个页面、串行操作**。不要同时运行多个 ADX 采集任务。风险提示、登录过期或权限不足时暂停处理，不反复自动登录。
+
+安装方式参考 [Microsoft Playwright MCP](https://github.com/microsoft/playwright-mcp)。详细操作约束见 [采集与导出流程](docs/adx-collection-lessons-2026-09-18.md)。
+
+### 4. 只导出 Excel：不需要更新网站
+
+配置好目标平台后，直接把产品、市场、渠道、门槛和数量交给 AI，并要求按 [Excel 独立交付指南与文字范本](docs/excel-only-guide.md) 生成 `.xlsx`。
+
+基本流程：**确认口径 → 小样验证 → 串行采集 → 相似视频归组 → 保留各条投放数据 → 视频分析 → 生成并检查 Excel**。
+
+- 不运行 `pnpm dev`，不修改网站的 `src/data/`，不部署 Netlify/Sites，也不自动上传研究数据。
+- 每个游戏独立工作表；相同创意的视频信息合并，投放记录分行列出。另设未合并的“投放明细”表，方便排序。
+- 广大大和 ADX 都放**精确广告详情页链接**；曝光显示 K/M，底层保留数字。
+- 仓库目前**没有通用的“一条命令自动采集并导出所有游戏”脚本**。这是一套由 AI 调用已配置工具、生成文件的工作流程；ExcelJS 负责写表，不负责登录或采集。
+- 所附范本是文字规格和可复制任务指令，不是假数据样例。实际数据不足、视频未核验和放宽门槛的情况都必须如实标注。
+
+## 本地运行（仅需要网站时）
 
 准备与项目依赖兼容的 Node.js 22 LTS 和 pnpm 9 或更高版本：
 
